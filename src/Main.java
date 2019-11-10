@@ -5,7 +5,7 @@ public class Main {
 
         System.out.println("hello again");
         for (int i = 0; i < 10; i++) {
-            System.out.println("is it working?");
+            System.out.println("is it worddking?");
 
         }
     }

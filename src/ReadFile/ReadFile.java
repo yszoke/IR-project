@@ -2,20 +2,18 @@ package ReadFile;
 
 import Doc.Doc;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ReadFile {
-    private ArrayList<Doc> docs;
     private File[] folders;
     private int index=0;
+    private int docNum=1;
 
     public ReadFile(String path) {
-        this.docs = new ArrayList<Doc>();
         this.folders = new File(path).listFiles();
     }
 
@@ -48,7 +46,7 @@ public class ReadFile {
 
 
 
-    private void saveDoc(ArrayList<String> lisrOfWords) {
+    private void saveDoc(ArrayList<String> lisrOfWords) throws FileNotFoundException, UnsupportedEncodingException {
         //System.out.println(file.getPath());
         index = 0;
 
@@ -57,9 +55,11 @@ public class ReadFile {
         while (word != null) {
             if (word.equals("<TEXT>")) {
                 index++;
-                ArrayList<String> lisrOfText = new ArrayList<>();
+                //ArrayList<String> lisrOfText = new ArrayList<>();
+                String lisrOfText="";
                 while (!word.equals("</TEXT>") && word != null) {
-                    lisrOfText.add(lisrOfWords.get(index));
+                    //lisrOfText.add(lisrOfWords.get(index));
+                    lisrOfText= lisrOfText + " " +lisrOfWords.get(index);
                     index++;
                     if(index==lisrOfWords.size()) {
                         break;
@@ -68,7 +68,16 @@ public class ReadFile {
                 }
 
                 Doc doc= new Doc(lisrOfText);
-                docs.add(doc);
+                File file = new File("logs1/file.txt");
+                File f = new File("directory/fileName.txt");
+
+
+                PrintWriter writer = new PrintWriter("documents//"+docNum+".txt", "UTF-8");
+                writer.println(doc.getText());
+                writer.close();
+
+                docNum++;
+
             }
             index++;
             if(index>=lisrOfWords.size()) {

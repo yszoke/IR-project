@@ -7,17 +7,18 @@ public class Doc {
     private String DocNumber;
     private String HT;
     private String Header;
-    private ArrayList<String> Text;
+    private String Text;
 
-    public ArrayList<String> getText() {
-        return Text;
-    }
 
-    public void setText(ArrayList<String> text) {
+    public Doc(String text) {
         Text = text;
     }
 
-    public Doc(ArrayList<String> text) {
+    public String getText() {
+        return Text;
+    }
+
+    public void setText(String text) {
         Text = text;
     }
 

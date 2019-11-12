@@ -11,10 +11,9 @@ import java.util.Scanner;
 public class ReadFile {
     private File[] folders;
     private int index=0;
-    private int docNum=1;
     private ArrayList<Doc> docs;
     String allWords="";
-    private ArrayList<String> allDocs;
+    protected ArrayList<String> allDocs;
 
     public ReadFile(String path) {
         this.folders = new File(path).listFiles();
@@ -42,15 +41,16 @@ public class ReadFile {
                 //File file1=new File(file.getPath()+"\\"+ file.getName());
                 try
                 {
-                    allDocs.add(new String ( Files.readAllBytes( Paths.get(file.getPath()+"\\"+ file.getName()) ) ));
-                    index++;
-                    System.out.println(index);
 
+                    allDocs.add(new String ( Files.readAllBytes( Paths.get(file.getPath()+"\\"+ file.getName()) ) ));
+                    //index++;
+                    //System.out.println(index);
                 }
                 catch (IOException e)
                 {
                     e.printStackTrace();
                 }
+
 
 
 

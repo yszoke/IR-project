@@ -12,33 +12,47 @@ public class ReadFile {
     private File[] folders;
     private int index=0;
     private int docNum=1;
+    private ArrayList<Doc> docs;
+    String allWords="";
+    private ArrayList<String> allDocs;
 
     public ReadFile(String path) {
         this.folders = new File(path).listFiles();
+        this.docs=new ArrayList<Doc>();
+        this.allDocs=new ArrayList<>();
+
     }
 
     public void openFile() throws IOException {
         for (File file : folders) {
             if (file.isDirectory()) {
-                //System.out.println(file.getPath()+"\\"+ file.getName());
-                //File file1 = new File(file.getPath()+"\\"+ file.getName());
-                //String data = "";
-                //data = new String(Files.readAllBytes(Paths.get(file.getPath()+"\\"+ file.getName())));
-                //saveDoc(data);
+                /*
                 File file1=new File(file.getPath()+"\\"+ file.getName());
                 Scanner input=new Scanner(file1);
-                //input.useDelimiter("\n"); //delimitor is one or more spaces
-                //input.useDelimiter(" +,\n"); //delimitor is one or more spaces
 
                 ArrayList<String> lisrOfWords=new ArrayList<>();
                 while(input.hasNext()){
-                    //System.out.println(input.next());
                     lisrOfWords.add(input.next());
 
                 }
                 if(!lisrOfWords.isEmpty()){
                     saveDoc(lisrOfWords);
                 }
+                */
+                //File file1=new File(file.getPath()+"\\"+ file.getName());
+                try
+                {
+                    allDocs.add(new String ( Files.readAllBytes( Paths.get(file.getPath()+"\\"+ file.getName()) ) ));
+                    index++;
+                    System.out.println(index);
+
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+
+
 
             }
         }
@@ -66,17 +80,10 @@ public class ReadFile {
                     }
                     word = lisrOfWords.get(index);
                 }
+                //allDocs+=lisrOfText;
+                //Doc doc= new Doc(lisrOfText);
+                //docs.add(doc);
 
-                Doc doc= new Doc(lisrOfText);
-                File file = new File("logs1/file.txt");
-                File f = new File("directory/fileName.txt");
-
-
-                PrintWriter writer = new PrintWriter("documents//"+docNum+".txt", "UTF-8");
-                writer.println(doc.getText());
-                writer.close();
-
-                docNum++;
 
             }
             index++;

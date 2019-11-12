@@ -12,6 +12,7 @@ import java.util.Scanner;
 public class ReadFile {
     private ArrayList<Doc> docs;
     private File[] folders;
+    private int index=0;
 
     public ReadFile(String path) {
         this.docs = new ArrayList<Doc>();
@@ -28,8 +29,8 @@ public class ReadFile {
                 //saveDoc(data);
                 File file1=new File(file.getPath()+"\\"+ file.getName());
                 Scanner input=new Scanner(file1);
-                input.useDelimiter("\n"); //delimitor is one or more spaces
-                input.useDelimiter(" +"); //delimitor is one or more spaces
+                //input.useDelimiter("\n"); //delimitor is one or more spaces
+                //input.useDelimiter(" +,\n"); //delimitor is one or more spaces
 
                 ArrayList<String> lisrOfWords=new ArrayList<>();
                 while(input.hasNext()){
@@ -37,7 +38,9 @@ public class ReadFile {
                     lisrOfWords.add(input.next());
 
                 }
-                saveDoc(lisrOfWords);
+                if(!lisrOfWords.isEmpty()){
+                    saveDoc(lisrOfWords);
+                }
 
             }
         }
@@ -47,21 +50,35 @@ public class ReadFile {
 
     private void saveDoc(ArrayList<String> lisrOfWords) {
         //System.out.println(file.getPath());
-        ArrayList<String> lisrOfText = new ArrayList<>();
-        int index = 0;
+        index = 0;
+
         String word = lisrOfWords.get(index);
 
         while (word != null) {
             if (word.equals("<TEXT>")) {
+                index++;
+                ArrayList<String> lisrOfText = new ArrayList<>();
                 while (!word.equals("</TEXT>") && word != null) {
                     lisrOfText.add(lisrOfWords.get(index));
                     index++;
+                    if(index==lisrOfWords.size()) {
+                        break;
+                    }
                     word = lisrOfWords.get(index);
                 }
+
+                Doc doc= new Doc(lisrOfText);
+                docs.add(doc);
             }
             index++;
+            if(index>=lisrOfWords.size()) {
+                break;
+            }
             word = lisrOfWords.get(index);
+
+
         }
+
 
     }
 }

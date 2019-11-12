@@ -1,14 +1,23 @@
 package Doc;
 
+import java.util.ArrayList;
+
 public class Doc {
 
     private String DocNumber;
     private String HT;
     private String Header;
-    private String Text;
+    private ArrayList<String> Text;
 
+    public ArrayList<String> getText() {
+        return Text;
+    }
 
-    public Doc(String text) {
+    public void setText(ArrayList<String> text) {
+        Text = text;
+    }
+
+    public Doc(ArrayList<String> text) {
         Text = text;
     }
 
@@ -36,11 +45,5 @@ public class Doc {
         Header = header;
     }
 
-    public String getText() {
-        return Text;
-    }
 
-    public void setText(String text) {
-        Text = text;
-    }
 }

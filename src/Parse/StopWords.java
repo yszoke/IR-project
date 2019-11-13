@@ -20,6 +20,7 @@ public class StopWords {
         }
     }
 
+
     public boolean check(String word) {
         if (stopWords.contains(word.toLowerCase())) {
             return true;

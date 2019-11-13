@@ -6,22 +6,7 @@ import java.util.HashSet;
 public class Parser {
 
 
-    private String doc;
-    private String sentence[];
-
-    public Parser(String doc) {
-        this.doc = doc;
-
-    }
-
-    public String[] getSentencesFromDocs(String Doc) throws IOException {
-        sentence = Sentences.breakToSentences(Sentences.breakIntoText(Doc));
-
-        return sentence;
-
-    }
-
-    public HashSet parse(String[] words) throws IOException {
+    public HashSet parse(String[] words,int docNumber) throws IOException {
         int index = 1;
         HashSet<String> newWords=new HashSet();
         StopWords stopWords=new StopWords();
@@ -30,6 +15,7 @@ public class Parser {
         while(index<=words.length)
         {
             //if word is part of yeshut
+            //yesut(newWords,words,index);
             if (Character.isUpperCase(words[index].charAt(0))) {
                 //send to check if yeshut (new words, words, index)
 
@@ -41,6 +27,7 @@ public class Parser {
             //if the word is a number
             else if(number.check(words,index)){
                 //send to numbers
+                number.change(newWords,words,index);
             }
             //the word is a term
             else
@@ -51,7 +38,7 @@ public class Parser {
             index++;
         }
 
-        dictionary.send(newWords,docnum);
+        //dictionary.send(newWords,docnum);
         return newWords;
 
     }

@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 
+/**
+ * this class receive doc, go over each word and parser it. save the new word in a list.
+ */
+
 public class Parser {
 
     private int indexDoc;
@@ -14,12 +18,13 @@ public class Parser {
     public Parser(int indexDoc,String path) {
         this.indexDoc = indexDoc;
         this.path = path;
+        this.entities=new HashSet<>();
     }
 
 
 
     /**
-     * this function take a line and split to list of words, and send each word to a parse function
+     * this function recieve text of a doc and split to list of sentences.
      * @param
      */
 
@@ -33,6 +38,12 @@ public class Parser {
         }
     }
 
+    /**
+     * this function recieve sentence and split it to array of words.
+     * send the array to parse method
+     * @param sentence
+     * @throws IOException
+     */
     private void splitToWords(String sentence) throws IOException {
         String lineOfWords[] = sentence.split(" +");
         for (String parseWord : lineOfWords) {
@@ -49,6 +60,12 @@ public class Parser {
         }
     }
 
+    /**
+     * this function will go over each word and parse it to number/term/ entity etc..save each term in a list of new word
+     * @param words
+     * @throws IOException
+     */
+
 
     public void parse(String[] words) throws IOException {
         int index = 0;
@@ -63,7 +80,7 @@ public class Parser {
             if (Character.isUpperCase(words[index].charAt(0))) {
                 String term = words[index];
                 index++;
-                while(Character.isUpperCase(words[index].charAt(0))){
+                while(index<words.length && Character.isUpperCase(words[index].charAt(0))){
                     term += " " + words[index];
                     index++;
                 }
@@ -75,8 +92,9 @@ public class Parser {
             }
             //if word is stop word
             else if(stopWords.check(words[index])){
-                //dont insert to new words
                 index++;
+                //dont insert to new words
+
             }
             //if the word is a number
             else if(number.check(words,index)){

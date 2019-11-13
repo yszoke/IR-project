@@ -13,7 +13,7 @@ public class StopWords {
 
     public StopWords() throws IOException {
         stopWords=new HashSet<>();
-        String doc = new String(Files.readAllBytes(Paths.get("C:\\Users\\yszok\\Desktop\\IR project\\05 stop_words")));
+        String doc = new String(Files.readAllBytes(Paths.get("C:\\Users\\yszok\\Desktop\\IR project\\05 stop_words.txt")));
         BufferedReader bufReader = new BufferedReader(new StringReader(doc));
         while ((line = bufReader.readLine()) != null) {
             stopWords.add(line);
@@ -21,7 +21,7 @@ public class StopWords {
     }
 
     public boolean check(String word) {
-        if (stopWords.contains(word)) {
+        if (stopWords.contains(word.toLowerCase())) {
             return true;
         }
         return false;

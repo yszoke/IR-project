@@ -1,13 +1,12 @@
 import ReadFile.ReadFile;
 
-
 import java.io.IOException;
 
-public class tests {
+public class Manager {
 
-    public static void main(String[] args) throws IOException {
+    public void execute(String path) throws IOException {
         ReadFile readFile = new ReadFile("C:\\Users\\ohoff\\Documents\\information retrieval\\corpus");
         readFile.splitToDocs();
-        }
-    }
 
+    }
+}

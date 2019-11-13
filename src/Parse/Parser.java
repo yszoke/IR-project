@@ -5,6 +5,22 @@ import java.util.HashSet;
 
 public class Parser {
 
+
+    private String doc;
+    private String sentence[];
+
+    public Parser(String doc) {
+        this.doc = doc;
+
+    }
+
+    public String[] getSentencesFromDocs(String Doc) throws IOException {
+        sentence = Sentences.breakToSentences(Sentences.breakIntoText(Doc));
+
+        return sentence;
+
+    }
+
     public HashSet parse(String[] words) throws IOException {
         int index = 1;
         HashSet<String> newWords=new HashSet();

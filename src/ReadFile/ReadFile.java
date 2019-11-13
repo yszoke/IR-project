@@ -72,7 +72,7 @@ public class ReadFile {
             if(lastChar==','||lastChar=='.'||lastChar==':'){
                 parseWord=parseWord.substring(0,parseWord.length()-1);
             }
-            System.out.println(parseWord);
+
             //parseWord = Parse(parseWord);
             //add parseWord to index
         }

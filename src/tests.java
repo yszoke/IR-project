@@ -6,7 +6,7 @@ import java.io.IOException;
 public class tests {
 
     public static void main(String[] args) throws IOException {
-        ReadFile readFile = new ReadFile("C:\\Users\\yszok\\Desktop\\IR project\\corpus");
+        ReadFile readFile = new ReadFile("C:\\Users\\yszok\\Desktop\\IR project");
         readFile.splitToLines();
         }
     }

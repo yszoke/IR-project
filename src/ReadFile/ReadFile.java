@@ -20,7 +20,7 @@ public class ReadFile {
      * @param path
      */
     public ReadFile(String path) {
-        this.folders = new File(path).listFiles();
+        this.folders = new File(path+"\\corpus").listFiles();
     }
 
     /**
@@ -65,6 +65,14 @@ public class ReadFile {
     private void splitToWords(String line) {
         String lineOfWords[] = line.split(" +");
         for (String parseWord : lineOfWords) {
+            if(parseWord.equals("")){
+                continue;
+            }
+            char lastChar = parseWord.charAt(parseWord.length()-1);
+            if(lastChar==','||lastChar=='.'||lastChar==':'){
+                parseWord=parseWord.substring(0,parseWord.length()-1);
+            }
+            System.out.println(parseWord);
             //parseWord = Parse(parseWord);
             //add parseWord to index
         }

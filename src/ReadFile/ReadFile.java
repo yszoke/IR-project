@@ -23,6 +23,7 @@ public class ReadFile {
         this.folders = new File(path+"\\corpus").listFiles();
     }
 
+
     /**
      * this function takes the files from the folder and split them to lines and send each line to the split lines function
      * @throws IOException

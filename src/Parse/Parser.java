@@ -34,6 +34,7 @@ public class Parser {
 
             index++;
         }
+
         dictionary.send(newWords,docnum);
         return newWords;
 

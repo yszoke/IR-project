@@ -16,6 +16,7 @@ public class ReadFile {
     private File[] folders;
     private int indexDoc = 1;
     private String line;
+    private String path;
 
     /**
      * constructor
@@ -23,6 +24,7 @@ public class ReadFile {
      */
     public ReadFile(String path) {
         this.folders = new File(path+"\\tests").listFiles();
+        this.path=path;
     }
 
 
@@ -57,7 +59,8 @@ public class ReadFile {
                     }
                     System.out.println(line);
                     if (line != null) {
-                        splitTextToSentence(text);
+                        Parser parser = new Parser(indexDoc,path);
+                        parser.splitTextToSentence(text);
                         indexDoc++;
                         System.out.println(indexDoc);
                     }
@@ -66,36 +69,5 @@ public class ReadFile {
             }
         }
     }
-    /**
-     * this function take a line and split to list of words, and send each word to a parse function
-     * @param line
-     */
 
-
-    private void splitTextToSentence(String text) throws IOException {
-        System.out.println(text);
-        String sentences[] = text.split("\\.|, |\\?|\\!");
-        for (String sentence:sentences) {
-            splitToWords(sentence);
-
-        }
-    }
-
-    private void splitToWords(String sentence) throws IOException {
-        String lineOfWords[] = sentence.split(" +");
-        for (String parseWord : lineOfWords) {
-            /*
-            if(parseWord.equals("")){
-                continue;
-            }
-             */
-            System.out.println(parseWord);
-            Parser parser = new Parser();
-
-            parser.parse(lineOfWords,indexDoc);
-
-            //parseWord = Parse(parseWord);
-            //add parseWord to index
-        }
-    }
 }

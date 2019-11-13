@@ -11,9 +11,10 @@ public class StopWords {
     String line="";
     HashSet<String> stopWords;
 
-    public StopWords() throws IOException {
+
+    public StopWords(String path) throws IOException {
         stopWords=new HashSet<>();
-        String doc = new String(Files.readAllBytes(Paths.get("C:\\Users\\yszok\\Desktop\\IR project\\05 stop_words.txt")));
+        String doc = new String(Files.readAllBytes(Paths.get(path+"\\05 stop_words.txt")));
         BufferedReader bufReader = new BufferedReader(new StringReader(doc));
         while ((line = bufReader.readLine()) != null) {
             stopWords.add(line);

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import static sun.tools.jar.CommandLine.parse;
+
 /**
  * this class receive doc, go over each word and parser it. save the new word in a list.
  */
@@ -24,18 +26,13 @@ public class Parser {
 
 
     /**
-     * this function recieve text of a doc and split to list of sentences.
+     * this function recieve doc of a doc and split to list of sentences.
      * @param
      */
 
 
-    public void splitTextToSentence(String text) throws IOException {
-        System.out.println(text);
-        String sentences[] = text.split("\\. |, |\\?|\\!");
-        for (String sentence:sentences) {
-            splitToWords(sentence);
-
-        }
+    public String[] splitTextToSentence(String doc) {
+        return doc.split("\\. |, |\\?|\\!");
     }
 
     /**
@@ -44,20 +41,9 @@ public class Parser {
      * @param sentence
      * @throws IOException
      */
-    private void splitToWords(String sentence) throws IOException {
-        String lineOfWords[] = sentence.split(" +");
-        for (String parseWord : lineOfWords) {
-            /*
-            if(parseWord.equals("")){
-                continue;
-            }
-             */
-            System.out.println(parseWord);
-            parse(lineOfWords);
+    private String[] splitToWords(String sentence) {
+        return sentence.split(" +");
 
-            //parseWord = Parse(parseWord);
-            //add parseWord to index
-        }
     }
 
     /**
@@ -67,7 +53,15 @@ public class Parser {
      */
 
 
-    public void parse(String[] words) throws IOException {
+    public void preparationToPaser(String doc) throws IOException {
+        String sentences[] = splitTextToSentence(doc);
+        for (String sentence : sentences) {
+            String lineOfWords[] = splitToWords(sentence);
+            parse(lineOfWords);
+        }
+    }
+
+    private void parse(String[] words) throws IOException {
         int index = 0;
         newWords=new HashMap<>();
         StopWords stopWords=new StopWords(path);
@@ -120,8 +114,8 @@ public class Parser {
 
         //dictionary.send(newWords,docnum);
 
-
     }
+
 
     /**
      * this method will insert a word to the list, if the word is already there, then the counter will increase by 1.

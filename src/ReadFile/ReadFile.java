@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 /**
  * this class read files from a directory, split the words, give the words a document number and send them to parse
  */
-public class ReadFile {
+public class ReadFile implements ReadFileMethods{
     /**
      * variables
      */
@@ -17,13 +17,15 @@ public class ReadFile {
     private int indexDoc = 1;
     private String line;
     private String path;
+    private final String textTag = "<TEXT>";
+    private final String closingTextTag = "</TEXT>";
 
     /**
      * constructor
      * @param path
      */
     public ReadFile(String path) {
-        this.folders = new File(path+"\\tests").listFiles();
+        this.folders = new File(path+"\\corpus").listFiles();
         this.path=path;
     }
 
@@ -32,42 +34,50 @@ public class ReadFile {
      * this function takes the files from the folder and split them to lines and send each line to the split lines function
      * @throws IOException
      */
-    public void splitToText() throws IOException {
+    public void splitToDocs() throws IOException {
         for (File file : folders) {
             if (file.isDirectory()) {
                 String doc = new String(Files.readAllBytes(Paths.get(file.getPath() + "\\" + file.getName())));
                 BufferedReader bufReader = new BufferedReader(new StringReader(doc));
                 while ((line = bufReader.readLine()) != null) {
-                    while (line != null && !line.equals("<TEXT>")) {
+                    while (streamNotReachTag(textTag)) {
                         line = bufReader.readLine();
                     }
-                    if (line != null && line.equals("<TEXT>")) {
+                    if (line != null && line.equals(textTag)) {
                         line = bufReader.readLine();
                     }
                     String text = "";
-                    while (line != null && !line.equals("</TEXT>")) {
+                    while (streamNotReachTag(closingTextTag)) {
                         while (line.equals("")) {
                             line = bufReader.readLine();
                         }
 
-                        if (line != null && !line.equals("</TEXT>")) {
+                        if (streamNotReachTag(closingTextTag)) {
                             text+=line;
 
                             //splitToWords(line);
                             line = bufReader.readLine();
                         }
                     }
-                    System.out.println(line);
+                    //System.out.println(line);
                     if (line != null) {
-                        Parser parser = new Parser(indexDoc,path);
-                        parser.splitTextToSentence(text);
+                        //Parser parser = new Parser(indexDoc,path);
+                        //parser.preparationToPaser(text);
                         indexDoc++;
                         System.out.println(indexDoc);
                     }
                     //file ends or arrive at </text>
                 }
             }
+
         }
+    }
+
+    private boolean streamNotReachTag(String tag){
+        if (line != null && !line.equals(tag)){
+            return true;
+        }
+        return false;
     }
 
 }

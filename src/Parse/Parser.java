@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import static sun.tools.jar.CommandLine.parse;
-
 /**
  * this class receive doc, go over each word and parser it. save the new word in a list.
  */
@@ -16,41 +14,22 @@ public class Parser {
     private String path;
     private HashMap<String,Integer> newWords;
     private HashSet<String> entities;
+    private StopWords stopWords;
+    private Number number;
+    private int indexInSentence;
 
-    public Parser(int indexDoc,String path) {
+    public Parser(int indexDoc,String path) throws IOException {
         this.indexDoc = indexDoc;
         this.path = path;
         this.entities=new HashSet<>();
+        this.newWords=new HashMap<>();
+        this.stopWords=new StopWords(path);
+        this.number= new Number();
     }
 
 
 
-    /**
-     * this function recieve doc of a doc and split to list of sentences.
-     * @param
-     */
 
-
-    public String[] splitTextToSentence(String doc) {
-        return doc.split("\\. |, |\\?|\\!");
-    }
-
-    /**
-     * this function recieve sentence and split it to array of words.
-     * send the array to parse method
-     * @param sentence
-     * @throws IOException
-     */
-    private String[] splitToWords(String sentence) {
-        return sentence.split(" +");
-
-    }
-
-    /**
-     * this function will go over each word and parse it to number/term/ entity etc..save each term in a list of new word
-     * @param words
-     * @throws IOException
-     */
 
 
     public void preparationToPaser(String doc) throws IOException {
@@ -61,59 +40,91 @@ public class Parser {
         }
     }
 
-    private void parse(String[] words) throws IOException {
-        int index = 0;
-        newWords=new HashMap<>();
-        StopWords stopWords=new StopWords(path);
-        Number number= new Number();
+    /**
+     * this function recieve doc of a doc and split to list of sentences.
+     * @param
+     */
 
-        while(index<words.length)
+
+    public String[] splitTextToSentence(String doc) {
+        return doc.split("\\. |, |- |\\?|\\!");
+    }
+
+    /**
+     * this function recieve sentence and split it to array of words.
+     * send the array to parse method
+     * @param sentence
+     * @throws IOException
+     */
+    public String[] splitToWords(String sentence) {
+        return sentence.split(" +");
+
+    }
+
+    /**
+     * this function will go over each word and parse it to number/term/ entity etc..save each term in a list of new word
+     * @param words
+     * @throws IOException
+     */
+
+    public void parse(String[] words) throws IOException {
+        indexInSentence = 0;
+        while(indexInSentence <words.length)
         {
             //if word is part of yeshut
             //yesut(newWords,words,index);
-            if (Character.isUpperCase(words[index].charAt(0))) {
-                String term = words[index];
-                index++;
-                while(index<words.length && Character.isUpperCase(words[index].charAt(0))){
-                    term += " " + words[index];
-                    index++;
-                }
-                //add the new term to new words list and entities list
-                insertToWordsList(term);
-                entities.add(term);
-                //send to check if yeshut (new words, words, index)
+            if (Character.isUpperCase(words[indexInSentence].charAt(0))) {
+                addToEntity(words);
+
 
             }
             //if word is stop word
-            else if(stopWords.check(words[index])){
-                index++;
+            else if(stopWords.check(words[indexInSentence])){
+                indexInSentence++;
                 //dont insert to new words
 
             }
             //if the word is a number
-            else if(number.check(words,index)){
-                if(index<words.length-1) {
-                    String nextWord = words[index + 1];
+            else if(number.check(words, indexInSentence)){
+                if(indexInSentence <words.length-1) {
+                    String nextWord = words[indexInSentence + 1];
                     if (nextWord == "percent" || nextWord == "percentage") {
-                        newWords = number.change2(newWords, words, index);
-                        index+=2;
+                        newWords = number.change2(newWords, words, indexInSentence);
+                        indexInSentence +=2;
 
                     }
                 }
                 //send to numbers
-                newWords=number.change(newWords,words,index);
-                index++;
+                newWords=number.change(newWords,words, indexInSentence);
+                indexInSentence++;
             }
             //the word is a term
             else
             {
-                insertToWordsList(words[index]);
-                index++;
+                insertToWordsList(words[indexInSentence]);
+                indexInSentence++;
             }
         }
 
         //dictionary.send(newWords,docnum);
 
+    }
+
+    /**
+     * this method is a sub method of parse in case of the term is entity, it will add the term to entites data base and check for the next word recursively.
+     * @param words
+     */
+
+    private void addToEntity(String[] words) {
+        String term = words[indexInSentence];
+        indexInSentence++;
+        while(indexInSentence<words.length && Character.isUpperCase(words[indexInSentence].charAt(0))){
+            term += " " + words[indexInSentence];
+            indexInSentence++;
+        }
+        //add the new term to new words list and entities list
+        insertToWordsList(term);
+        entities.add(term);
     }
 
 

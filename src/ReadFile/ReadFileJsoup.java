@@ -46,8 +46,8 @@ public class ReadFileJsoup implements ReadFileMethods {
                 Document html = Jsoup.parse(doc);
                 Elements elements=  html.getElementsByTag("DOC");
                 for (Element element : elements) {
-                    //Parser parser = new Parser(indexDoc,path);
-                    //parser.preparationToPaser(element.getElementsByTag("TEXT").text());
+                    Parser parser = new Parser(indexDoc,path);
+                    parser.preparationToPaser(element.getElementsByTag("TEXT").text());
                     System.out.println(indexDoc);
                     indexDoc++;
                 }

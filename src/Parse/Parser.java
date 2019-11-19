@@ -16,6 +16,7 @@ public class Parser {
     private HashSet<String> entities;
     private StopWords stopWords;
     private Number number;
+    private String tempWord;
     private int indexInSentence;
 
     public Parser(int indexDoc,String path) throws IOException {
@@ -85,18 +86,29 @@ public class Parser {
 
             }
             //if the word is a number
-            else if(number.check(words, indexInSentence)){
-                if(indexInSentence <words.length-1) {
-                    String nextWord = words[indexInSentence + 1];
-                    if (nextWord == "percent" || nextWord == "percentage") {
-                        newWords = number.change2(newWords, words, indexInSentence);
-                        indexInSentence +=2;
+            else if(number.check(words[indexInSentence])){
+                words[indexInSentence]=number.change(words,indexInSentence);
+                //if the number is'nt the last term in the sentence
+                if(indexInSentence<words.length-1) {
+                    tempWord=number.changeWords(words,indexInSentence);
 
+                    if(!tempWord.equals(words[indexInSentence])&&indexInSentence<words.length-2){
+
+
+                        indexInSentence+=3;
                     }
+                    else{
+                        indexInSentence+=2;
+                        insertToWordsList(tempWord);
+                    }
+
                 }
-                //send to numbers
-                newWords=number.change(newWords,words, indexInSentence);
-                indexInSentence++;
+                //the number is the last term in the sentence
+                else
+                {
+                    insertToWordsList(words[indexInSentence]);
+                    indexInSentence++;
+                }
             }
             //the word is a term
             else

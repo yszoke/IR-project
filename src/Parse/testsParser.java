@@ -14,19 +14,17 @@ public class testsParser {
 
     public static void main(String[] args) throws IOException {
         int docIndex = 1;
-        String pathForStopWords = "C:\\Users\\ohoff\\Documents\\information retrieval\\corpus";
+        //String pathForStopWords = "C:\\Users\\ohoff\\Documents\\information retrieval\\corpus";
+        String pathForStopWords = "C:\\Users\\yszok\\Desktop\\IR project";
         Parser parser = new Parser(docIndex,pathForStopWords);
         File input = new File(pathForStopWords+"\\tests\\testForParse");
         //generalTest(input,parser);
-        //numberTest(parser);
+        numberTest(parser);
         //entityTest(parser);
-        betweenTest(parser);
 
 
 
     }
-
-
 
     private static void entityTest(Parser parser) throws IOException {
         String sentence1 = "Lorem Ipsum is simply dummy text of the printing and typesetting industry";
@@ -34,7 +32,7 @@ public class testsParser {
                             "Vietnamese people in their struggle for national liberation in " +
                                 "the past as well as in national Vietnamese construction and defence at present";
         String sentence3 = " We also provide-static-- electricity protection for filling and draining devices";
-        String[] test  = parser.splitTextToSentence(sentence3);
+        //String[] test  = parser.splitTextToSentence(sentence3);
         String[] words = parser.splitToWords(sentence1);
         //parser.parse(words);
         words = parser.splitToWords(sentence2);
@@ -45,11 +43,8 @@ public class testsParser {
     }
 
     private static void numberTest(Parser parser) throws IOException {
-
-    }
-
-    private static void betweenTest(Parser parser) throws IOException {
-        String sentence1 = "Lorem Ipsum is between 1 and 10 not Between 1 and 0 or between omer and israel simply dummy text of the printing and typesetting industry";
+        String sentence1 = "100 1234 1334444.555 543 B";
+        String[] test  = parser.splitTextToSentence(sentence1);
         String[] words = parser.splitToWords(sentence1);
         parser.parse(words);
 

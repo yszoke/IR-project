@@ -19,11 +19,14 @@ public class testsParser {
         File input = new File(pathForStopWords+"\\tests\\testForParse");
         //generalTest(input,parser);
         //numberTest(parser);
-        entityTest(parser);
+        //entityTest(parser);
+        betweenTest(parser);
 
 
 
     }
+
+
 
     private static void entityTest(Parser parser) throws IOException {
         String sentence1 = "Lorem Ipsum is simply dummy text of the printing and typesetting industry";
@@ -41,7 +44,15 @@ public class testsParser {
 
     }
 
-    private static void numberTest(Parser parser) {
+    private static void numberTest(Parser parser) throws IOException {
+
+    }
+
+    private static void betweenTest(Parser parser) throws IOException {
+        String sentence1 = "Lorem Ipsum is between 1 and 10 not Between 1 and 0 or between omer and israel simply dummy text of the printing and typesetting industry";
+        String[] words = parser.splitToWords(sentence1);
+        parser.parse(words);
+
     }
 
     private static void generalTest(File input, Parser parser) throws IOException {

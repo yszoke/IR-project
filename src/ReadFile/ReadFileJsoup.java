@@ -5,12 +5,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.w3c.dom.NodeList;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -46,8 +43,8 @@ public class ReadFileJsoup implements ReadFileMethods {
                 Document html = Jsoup.parse(doc);
                 Elements elements=  html.getElementsByTag("DOC");
                 for (Element element : elements) {
-                    Parser parser = new Parser(indexDoc,path);
-                    parser.preparationToPaser(element.getElementsByTag("TEXT").text());
+                    Parser parser = new Parser(indexDoc,element.getElementsByTag("TEXT").text(),path);
+                    parser.parse();
                     System.out.println(indexDoc);
                     indexDoc++;
                 }

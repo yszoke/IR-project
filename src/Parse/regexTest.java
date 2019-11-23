@@ -483,6 +483,15 @@ public class regexTest {
         System.out.println(result);
         //assertEquals(result, target);
 
+        ArrayList<Integer> test = new ArrayList<>();
+        test.add(1);
+        test.add(1);
+        test.add(1);
+        test.add(1);
+        test.add(1);
+        ArrayList<ArrayList<Integer>> arrayLists = new ArrayList<>();
+        arrayLists.add(test);
+
 
 
     }

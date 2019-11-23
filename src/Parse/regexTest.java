@@ -1,13 +1,20 @@
 package Parse;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class regexTest {
 
 
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException {
         String text1 = "POLITICIANS,  PARTY PREFERENCES \n" +
                 "\n" +
                 "   Summary:  Newspapers in the Former Yugoslav Republic of \n" +
@@ -384,6 +391,7 @@ public class regexTest {
                 "POLICE POWER BOLSTERED -- The high court upheld a ruling that allows police to \n" +
                 "stop and question a person. A3 \n" +
                 "</P>";
+        /*
         for (int i=0;i<100000;i++){
             replacement(text1);
             replacement(text2);
@@ -391,6 +399,8 @@ public class regexTest {
 
         }
 
+         */
+        stopWordsStandart("try");
 
 
 
@@ -454,4 +464,27 @@ public class regexTest {
         text = text.replaceAll("\\s\\bU.S. dollars\\b| \\s\\bU.S. Dollars\\b "," Dollars");
 
     }
+
+    /**
+     * this test check the time it takes to remove all the stop words in regex strategy
+     */
+    private  static void stopWordsRegex(String text){
+
+        text = text.replaceAll("\\s\\bU.S. dollars\\b| \\s\\bU.S. Dollars\\b "," Dollars");
+    }
+
+    private  static void stopWordsStandart(String doc) throws IOException {
+        List stopwords = Files.readAllLines(Paths.get("C:\\Users\\ohoff\\Documents\\information retrieval\\05 stop_words.txt"));
+        ArrayList<String> allWords = Stream.of(doc.toLowerCase()
+                .split(" "))
+                .collect(Collectors.toCollection(ArrayList<String>::new));
+        allWords.removeAll(stopwords);
+        String result = allWords.stream().collect(Collectors.joining(" "));
+        System.out.println(result);
+        //assertEquals(result, target);
+
+
+
+    }
+
 }

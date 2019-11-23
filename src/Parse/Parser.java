@@ -1,8 +1,14 @@
 package Parse;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * this class receive doc, go over each word and parser it. save the new word in a list.
@@ -35,9 +41,15 @@ public class Parser {
 
     public void preparationToPaser(String doc) throws IOException {
 
+        //remove stop words
+        doc = removeStopWords(path,doc);
+
+
+        //remove dots and commas
+        doc = doc.replaceAll(",|\\.", "");
+
         //replace percent or percentage to %
         doc = doc.replaceAll("\\%|\\s\\bpercent\\b|\\s\\bpercentage\\b", "%");
-        doc = doc.replaceAll(",|\\.", "");
 
         //replace Thousand to K
         doc = doc.replaceAll("\\s\\bThousand\\b|\\s\\bthousand\\b","K");
@@ -50,8 +62,8 @@ public class Parser {
 
         //replace U.S. dollars to Dollars
         doc = doc.replaceAll("\\s\\bU.S. dollars\\b| \\s\\bU.S. Dollars\\b "," Dollars");
-        /*
 
+        /*
         String sentences[] = splitTextToSentence(doc);
         for (String sentence : sentences) {
             String lineOfWords[] = splitToWords(sentence);
@@ -120,7 +132,7 @@ public class Parser {
                 words[indexInSentence]=number.change(words,indexInSentence);
                 //if the number is'nt the last term in the sentence
                 if(indexInSentence<words.length-1) {
-                    tempWord=number.changeWords(words,indexInSentence);
+                    //tempWord=number.changeWords(words,indexInSentence);
 
                     if(!tempWord.equals(words[indexInSentence])&&indexInSentence<words.length-2){
 
@@ -192,5 +204,22 @@ public class Parser {
             newWords.put(word,1);
         }
     }
+
+    private String removeStopWords(String path, String doc) throws IOException {
+
+        List stopwords = Files.readAllLines(Paths.get(path+ "\\05 stop_words.txt"));
+        ArrayList<String> allWords = Stream.of(doc.toLowerCase()
+                .split(" "))
+                .collect(Collectors.toCollection(ArrayList<String>::new));
+        allWords.removeAll(stopwords);
+        String result = allWords.stream().collect(Collectors.joining(" "));
+
+        return result;
+        //assertEquals(result, target);
+
+
+
+    }
+
 
 }

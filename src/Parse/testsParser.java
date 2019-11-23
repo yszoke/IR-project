@@ -13,7 +13,12 @@ public class testsParser {
     public static void main(String[] args) throws IOException {
         int docIndex = 1;
         String pathForStopWords = "C:\\Users\\ohoff\\Documents\\information retrieval\\corpus";
-        Parser parser = new Parser(docIndex,pathForStopWords);
+        String sentence1 = "Lorem Ipsum is simply dummy text of the Printing and typesetting industry";
+        String sentence2 = "The Mongolian Government and people gave wholehearted support to the " +
+                "Vietnamese people in their struggle for national liberation in " +
+                "the past as well as in national Vietnamese construction and defence at present";
+        String sentence3 = " We also provide-static-- electricity protection for filling and draining devices";
+        Parser parser = new Parser(docIndex,sentence1,pathForStopWords);
         File input = new File(pathForStopWords+"\\tests\\testForParse");
         //generalTest(input,parser);
         //numberTest(parser);
@@ -35,7 +40,7 @@ public class testsParser {
         String sentence3 = " We also provide-static-- electricity protection for filling and draining devices";
 
 
-        System.out.println(parser.addToEntity(sentence1,1));
+        System.out.println(parser.addToEntity());
 
     }
 
@@ -55,7 +60,7 @@ public class testsParser {
         Elements elements=  html.getElementsByTag("TEXT");
         for (Element element : elements) {
             System.out.println(element.text());
-            parser.parse(element.text());
+            //parser.parse(element.text());
         }
     }
 }

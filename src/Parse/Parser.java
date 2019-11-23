@@ -47,7 +47,7 @@ public class Parser {
 
 
         //remove dots and commas
-        doc = doc.replaceAll(",|\\.", "");
+        doc = doc.replaceAll(",\\s|,|\\.\\s|\\)|\\(|\\W\\bs\\b", " ");
 
         //replace percent or percentage to %
         doc = doc.replaceAll("\\%|\\s\\bpercent\\b|\\s\\bpercentage\\b", "%");
@@ -180,6 +180,7 @@ public class Parser {
         for (int i=0;i<allWords.size();i++){
             if (Character.isUpperCase(allWords.get(i).charAt(0))){
                 String entity = allWords.get(i);
+                //check with stop words todo
                 allWords.set(i,allWords.get(i)+ "*");
                 i++;
                 while(i<allWords.size()&& Character.isUpperCase(allWords.get(i).charAt(0))){

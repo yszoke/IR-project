@@ -28,11 +28,6 @@ public class Parser {
         this.number= new Number();
     }
 
-
-
-
-
-
     public void preparationToPaser(String doc) throws IOException {
         String sentences[] = splitTextToSentence(doc);
         for (String sentence : sentences) {
@@ -59,7 +54,6 @@ public class Parser {
      */
     public String[] splitToWords(String sentence) {
         return sentence.split(" +");
-
     }
 
     /**
@@ -70,45 +64,23 @@ public class Parser {
 
     public void parse(String[] words) throws IOException {
         indexInSentence = 0;
-        while(indexInSentence <words.length)
-        {
+        while(indexInSentence <words.length) {
             //if word is part of yeshut
             //yesut(newWords,words,index);
             if (Character.isUpperCase(words[indexInSentence].charAt(0))) {
                 addToEntity(words);
-
-
             }
+
             //if word is stop word
-            else if(stopWords.check(words[indexInSentence])){
+            else if (stopWords.check(words[indexInSentence])) {
                 indexInSentence++;
                 //dont insert to new words
 
             }
             //if the word is a number
-            else if(number.check(words[indexInSentence])){
-                words[indexInSentence]=number.change(words,indexInSentence);
-                //if the number is'nt the last term in the sentence
-                if(indexInSentence<words.length-1) {
-                    tempWord=number.changeWords(words,indexInSentence);
-
-                    if(!tempWord.equals(words[indexInSentence])&&indexInSentence<words.length-2){
-
-
-                        indexInSentence+=3;
-                    }
-                    else{
-                        indexInSentence+=2;
-                        insertToWordsList(tempWord);
-                    }
-
-                }
-                //the number is the last term in the sentence
-                else
-                {
-                    insertToWordsList(words[indexInSentence]);
-                    indexInSentence++;
-                }
+            else if (number.check(words[indexInSentence])) {
+                words[indexInSentence] = number.change(words, indexInSentence);
+                indexInSentence++;
             }
             //the word is a term
             else
@@ -117,9 +89,6 @@ public class Parser {
                 indexInSentence++;
             }
         }
-
-        //dictionary.send(newWords,docnum);
-
     }
 
     /**

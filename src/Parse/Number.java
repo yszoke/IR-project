@@ -1,86 +1,72 @@
 package Parse;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 
 public class Number {
     private ArrayList<String> newWords;
 
     public boolean check(String word) {
-        char firstChar=word.charAt(0);
-        if(Character.isDigit(firstChar)||firstChar=='$') {
+        char firstChar = word.charAt(0);
+        if (Character.isDigit(firstChar) && word.matches("[0-9]+|[0-9]++\\b.\\b+[0-9]+")) {
             return true;
         }
         return false;
     }
 
     public String change(String[] words, int index) {
-        double temp;
+        double doubleNum;
         //remove ","
         if (words[index].contains(",")) {
-            words[index]=words[index].replace(",", "");
+            words[index] = words[index].replace(",", "");
         }
-        // check if contain %
-        if (words[index].contains("%")) {
+        doubleNum = Double.valueOf(words[index]);
 
-        }
-//        if (words[index].contains(".")) {
-//            temp = Double.parseDouble(words[index]);
-//        }
-//        else {
-//            temp = Integer.parseInt(words[index]);
-//        }
-        temp = Double.parseDouble(words[index]);
+        if (doubleNum >= 1000000000) {
+            doubleNum = doubleNum / 1000000000;
+            double scale = Math.pow(10, 3);
+            doubleNum = Math.round(doubleNum * scale) / scale;
+            if ((doubleNum % 1) == 0) {
+                words[index] = "" + (int) doubleNum + "B";
+            } else {
+                words[index] = "" + doubleNum + "B";
+            }
+            System.out.println(words[index]);
+        } else if (doubleNum >= 1000000) {
+            doubleNum = doubleNum / 1000000;
+            double scale = Math.pow(10, 3);
+            doubleNum = Math.round(doubleNum * scale) / scale;
+            if ((doubleNum % 1) == 0) {
+                words[index] = "" + (int) doubleNum + "M";
+            } else {
+                words[index] = "" + doubleNum + "M";
+            }
+            System.out.println(words[index]);
 
-        if (temp >= 1000000000) {
-            temp = temp / 1000000000;
+        } else if (doubleNum >= 1000) {
+            doubleNum = doubleNum / 1000;
             double scale = Math.pow(10, 3);
-            temp= Math.round(temp * scale) / scale;
-            words[index] = temp + "B";
-            //System.out.println(words[index]+"!!!");
-        }
-        else if (temp >= 1000000) {
-            temp = temp / 1000000;
+            doubleNum = Math.round(doubleNum * scale) / scale;
+            if ((doubleNum % 1) == 0) {
+                words[index] = "" + (int) doubleNum + "K";
+            } else {
+                words[index] = "" + doubleNum + "K";
+            }
+            System.out.println(words[index]);
+
+        } else {
             double scale = Math.pow(10, 3);
-            temp= Math.round(temp * scale) / scale;
-            words[index] = temp + "M";
+            doubleNum = Math.round(doubleNum * scale) / scale;
+            if ((doubleNum % 1) == 0) {
+                words[index] = "" + (int) doubleNum;
+            } else {
+                words[index] = "" + doubleNum;
+            }
+            System.out.println(words[index]);
         }
-        else if (temp >= 1000) {
-            temp = temp / 1000;
-            double scale = Math.pow(10, 3);
-            temp= Math.round(temp * scale) / scale;
-            words[index] = temp + "K";
-            //System.out.println(words[index]+"!!!");
-        }
-        else{
-            double scale = Math.pow(10, 3);
-            temp= Math.round(temp * scale) / scale;
-            words[index] = ""+temp;
-        }
+
         //insertToWordsList(words[index]);
         return words[index];
 
     }
-
-    public String changeWords(String[] words, int index) {
-        newWords= new ArrayList();
-        String firstWord=words[index];
-        String secondWord=words[index+1];
-        if(secondWord.equals("percent") || secondWord.equals("percentage")){
-            firstWord=firstWord+"%";
-            return firstWord;
-        }
-        //if second word is 3/4
-//        if(secondWord.contains("/")&& check(secondWord){
-//
-//
-//        }
-        // if second word is million
-
-        return firstWord;
-
-
-
-    }
 }
+

@@ -3,10 +3,7 @@ package Parse;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,17 +15,19 @@ public class Parser {
 
     private int indexDoc;
     private String path;
+    private String doc;
     private HashMap<String,Integer> newWords;
-    private HashSet<String> entities;
+    private HashMap<String,Term> entities;
     private StopWords stopWords;
     private Number number;
     private String tempWord;
     private int indexInSentence;
 
-    public Parser(int indexDoc,String path) throws IOException {
+    public Parser(int indexDoc, String doc,String path) throws IOException {
         this.indexDoc = indexDoc;
+        this.doc = doc;
         this.path = path;
-        this.entities=new HashSet<>();
+        this.entities=new HashMap<>();
         this.newWords=new HashMap<>();
         this.stopWords=new StopWords(path);
         this.number= new Number();
@@ -39,14 +38,16 @@ public class Parser {
 
 
 
-    public void preparationToPaser(String doc) throws IOException {
+    public void parse() throws IOException {
+
+        doc = addToEntity();
 
         //remove stop words
-        doc = removeStopWords(path,doc);
+        doc = removeStopWords();
 
 
         //remove dots and commas
-        doc = doc.replaceAll(",|\\.", "");
+        doc = doc.replaceAll(",\\s|,|\\.\\s|\\)|\\(|\\W\\bs\\b", " ");
 
         //replace percent or percentage to %
         doc = doc.replaceAll("\\%|\\s\\bpercent\\b|\\s\\bpercentage\\b", "%");
@@ -114,43 +115,12 @@ public class Parser {
             insertToWordsList(term);
             }
 
-            //if word is part of yeshut
-            //yesut(newWords,words,index);
-            if (Character.isUpperCase(words[indexInSentence].charAt(0))) {
-                addToEntity(words);
 
 
-            }
-            //if word is stop word
-            else if(stopWords.check(words[indexInSentence])){
-                indexInSentence++;
-                //dont insert to new words
-
-            }
             //if the word is a number
-            else if(number.check(words[indexInSentence])){
-                words[indexInSentence]=number.change(words,indexInSentence);
-                //if the number is'nt the last term in the sentence
-                if(indexInSentence<words.length-1) {
-                    //tempWord=number.changeWords(words,indexInSentence);
-
-                    if(!tempWord.equals(words[indexInSentence])&&indexInSentence<words.length-2){
-
-
-                        indexInSentence+=3;
-                    }
-                    else{
-                        indexInSentence+=2;
-                        insertToWordsList(tempWord);
-                    }
-
-                }
-                //the number is the last term in the sentence
-                else
-                {
-                    insertToWordsList(words[indexInSentence]);
-                    indexInSentence++;
-                }
+            else if (number.check(words[indexInSentence])) {
+                words[indexInSentence] = number.change(words, indexInSentence);
+                indexInSentence++;
             }
             //the word is a term
             else
@@ -179,17 +149,6 @@ public class Parser {
          * @param words
          */
 
-    private void addToEntity(String[] words) {
-        String term = words[indexInSentence];
-        indexInSentence++;
-        while(indexInSentence<words.length && Character.isUpperCase(words[indexInSentence].charAt(0))){
-            term += " " + words[indexInSentence];
-            indexInSentence++;
-        }
-        //add the new term to new words list and entities list
-        insertToWordsList(term);
-        entities.add(term);
-    }
 
 
     /**
@@ -205,19 +164,49 @@ public class Parser {
         }
     }
 
-    private String removeStopWords(String path, String doc) throws IOException {
+    private String removeStopWords() throws IOException {
 
         List stopwords = Files.readAllLines(Paths.get(path+ "\\05 stop_words.txt"));
         ArrayList<String> allWords = Stream.of(doc.toLowerCase()
                 .split(" "))
                 .collect(Collectors.toCollection(ArrayList<String>::new));
         allWords.removeAll(stopwords);
-        String result = allWords.stream().collect(Collectors.joining(" "));
-
-        return result;
-        //assertEquals(result, target);
+        return allWords.stream().collect(Collectors.joining(" "));
+    }
 
 
+    public String addToEntity(){
+        ArrayList<String> allWords = new ArrayList<String>(Arrays.asList(doc.split(" +")));
+        for (int i=0;i<allWords.size();i++){
+            if (Character.isUpperCase(allWords.get(i).charAt(0))){
+                String entity = allWords.get(i);
+                //check with stop words todo
+                allWords.set(i,allWords.get(i)+ "*");
+                i++;
+                while(i<allWords.size()&& Character.isUpperCase(allWords.get(i).charAt(0))){
+                    entity = entity + " " + allWords.get(i);
+                    allWords.set(i,allWords.get(i)+ "*");
+                    i++;
+                }
+
+                if (entities.containsKey(entity)){
+
+                    Term term = entities.get(entity);
+                    //update exist term
+                    term = term.add(indexDoc);
+                    entities.put(entity,term);
+                }else {
+                    Term term = new Term(entity,indexDoc);
+                    entities.put(entity,term);
+                }
+            }
+        }
+
+        return allWords.stream().collect(Collectors.joining(" "));
+    }
+
+
+    public void numberCheck(){
 
     }
 

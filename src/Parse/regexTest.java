@@ -400,6 +400,7 @@ public class regexTest {
         }
 
          */
+        replacement(text1);
         stopWordsStandart("try");
 
 
@@ -436,6 +437,9 @@ public class regexTest {
 
     private static void replacement(String text){
         //replace percent or percentage to %
+        text = "omer's (is) . 9.3, 9,3 9'6";
+        text = text.replaceAll(",\\s|,|\\.\\s|\\)|\\(|\\W\\bs\\b", " ");
+        System.out.println(text);
         text = text.replaceAll("\\%|\\s\\bpercent\\b|\\s\\bpercentage\\b", "%");
 
         //replace Thousand to K
@@ -482,6 +486,15 @@ public class regexTest {
         String result = allWords.stream().collect(Collectors.joining(" "));
         System.out.println(result);
         //assertEquals(result, target);
+
+        ArrayList<Integer> test = new ArrayList<>();
+        test.add(1);
+        test.add(1);
+        test.add(1);
+        test.add(1);
+        test.add(1);
+        ArrayList<ArrayList<Integer>> arrayLists = new ArrayList<>();
+        arrayLists.add(test);
 
 
 

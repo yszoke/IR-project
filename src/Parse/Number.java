@@ -9,6 +9,7 @@ public class Number {
         char firstChar = word.charAt(0);
         if (Character.isDigit(firstChar) && word.matches("[0-9]+|[0-9]++\\b\\.\\b+[0-9]+")) {
             return true;
+
         }
         return false;
     }

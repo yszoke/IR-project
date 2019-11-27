@@ -7,7 +7,7 @@ public class Number {
 
     public boolean check(String word) {
         char firstChar = word.charAt(0);
-        if (Character.isDigit(firstChar) && word.matches("[0-9]+|[0-9]++\\b.\\b+[0-9]+")) {
+        if (Character.isDigit(firstChar) && word.matches("[0-9]+|[0-9]++\\b\\.\\b+[0-9]+")) {
             return true;
         }
         return false;
@@ -15,10 +15,7 @@ public class Number {
 
     public String change(String[] words, int index) {
         double doubleNum;
-        //remove ","
-        if (words[index].contains(",")) {
-            words[index] = words[index].replace(",", "");
-        }
+
         doubleNum = Double.valueOf(words[index]);
 
         if (doubleNum >= 1000000000) {

@@ -1,6 +1,7 @@
 package ReadFile;
 
 import Parse.Parser;
+import invertedIndex.Dictionary;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -19,6 +20,7 @@ public class ReadFileJsoup implements ReadFileMethods {
     private File[] folders;
     private int indexDoc = 1;
     private String path;
+    private Dictionary dictionary;
 
     /**
      * constructor
@@ -28,6 +30,7 @@ public class ReadFileJsoup implements ReadFileMethods {
     public ReadFileJsoup(String path) {
         this.folders = new File(path + "\\corpus").listFiles();
         this.path = path;
+        this.dictionary = new Dictionary();
     }
 
 
@@ -46,7 +49,7 @@ public class ReadFileJsoup implements ReadFileMethods {
                     if(element.getElementsByTag("TEXT").text().equals("")){
                         indexDoc++;
                     }else{
-                        Parser parser = new Parser(indexDoc,element.getElementsByTag("TEXT").text(),path);
+                        Parser parser = new Parser(indexDoc,element.getElementsByTag("TEXT").text(),path,dictionary);
                         parser.parse();
                         System.out.println(indexDoc);
                         indexDoc++;

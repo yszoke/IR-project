@@ -1,9 +1,17 @@
 package Parse;
 
+
+
+
+
+import invertedIndex.Dictionary;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,177 +24,209 @@ public class Parser {
     private int indexDoc;
     private String path;
     private String doc;
-    private HashMap<String,Integer> newWords;
+    private HashMap<String,Integer> wordsList;
+    private HashMap<String,Integer> stemmingList;
     private HashMap<String,Term> entities;
-    private StopWords stopWords;
-    private Number number;
-    private String tempWord;
-    private int indexInSentence;
+    private Dictionary dictionary;
 
-    public Parser(int indexDoc, String doc,String path) throws IOException {
+    //private StopWords stopWords;
+    private Number number;
+    private date date;
+    private List<String> stopWords;
+    private String tempWord;
+    private int indexInText;
+
+
+    public Parser(int indexDoc, String doc, String path, Dictionary dictionary) throws IOException {
         this.indexDoc = indexDoc;
         this.doc = doc;
         this.path = path;
+        this.date= new date();
         this.entities=new HashMap<>();
-        this.newWords=new HashMap<>();
-        this.stopWords=new StopWords(path);
+        this.wordsList =new HashMap<>();
+        this.stemmingList = new HashMap<>();
+        this.stopWords = Files.readAllLines(Paths.get(path+ "\\05 stop_words.txt"));
+        //this.stopWords=new StopWords(path);
         this.number= new Number();
+        this.dictionary = dictionary;
     }
 
 
 
 
+    /**
+     * this function will go over each word and parse it to number/term/ entity etc..save each term in a list of new word
+     * @throws IOException
+     */
 
 
     public void parse() throws IOException {
 
+        //remove dots and commas
+        doc = doc.replaceAll(",\\s|,|\\?|\\!|\\.,|\\)|\\(|\\-{2,}|\\:|\\;|\\]|\\[|[\"]|\\W\\bs\\b|[a-zA-Z]+\\s\\bpercent\\b|[a-zA-Z]+\\s\\bpercentage\\b", " ");
+
+        //entity and date removal
         doc = addToEntity();
 
         //remove stop words
         doc = removeStopWords();
 
+        //regex tranforms
+        regexTransforms();
 
-        //remove dots and commas
-        doc = doc.replaceAll(",\\s|,|\\.\\s|\\)|\\(|\\W\\bs\\b", " ");
+        //change text to array of words
+        ArrayList<String> textWords = new ArrayList<String>(Arrays.asList(doc.split("\\s+")));
+        textWords.removeIf(s -> s.matches("\\s+"));
+        textWords.remove("");
+        indexInText = 0;
 
-        //replace percent or percentage to %
-        doc = doc.replaceAll("\\%|\\s\\bpercent\\b|\\s\\bpercentage\\b", "%");
-
-        //replace Thousand to K
-        doc = doc.replaceAll("\\s\\bThousand\\b|\\s\\bthousand\\b","K");
-
-        doc = doc.replaceAll("\\s\\bMillion\\b|\\s\\bmillion\\b|\\s\\bm\\b\\s","M");
-        //System.out.println(text);
-
-        //replace Billion to B
-        doc = doc.replaceAll("\\s\\bBillion\\b|\\s\\bbillion\\b|\\s\\bbn\\b\\s|\\s\\bb\\b\\s","B");
-
-        //replace U.S. dollars to Dollars
-        doc = doc.replaceAll("\\s\\bU.S. dollars\\b| \\s\\bU.S. Dollars\\b "," Dollars");
-
-        /*
-        String sentences[] = splitTextToSentence(doc);
-        for (String sentence : sentences) {
-            String lineOfWords[] = splitToWords(sentence);
-            parse(lineOfWords);
-        }
-
-         */
-    }
-
-    /**
-     * this function recieve doc of a doc and split to list of sentences.
-     * @param
-     */
-
-
-    public String[] splitTextToSentence(String doc) {
-        return doc.split("\\. |, |- |\\?|\\!");
-    }
-
-    /**
-     * this function recieve sentence and split it to array of words.
-     * send the array to parse method
-     * @param sentence
-     * @throws IOException
-     */
-    public String[] splitToWords(String sentence) {
-        return sentence.split(" +");
-
-    }
-
-    /**
-     * this function will go over each word and parse it to number/term/ entity etc..save each term in a list of new word
-     * @param words
-     * @throws IOException
-     */
-
-    public void parse(String[] words) throws IOException {
-        indexInSentence = 0;
-        while(indexInSentence <words.length)
-        {
-            //if word is between - between 1 and 7 insert 4 words after is as a term
-            if(wordIsBetween(words)){
-            String term ="";
-            for (int i = 0; i < 4; i++) {
-                term+=words[indexInSentence]+ " ";
-                indexInSentence++;
+        /* iterate over the array and create terms */
+        for (indexInText =0; indexInText < textWords.size(); indexInText++){
+            //System.out.println(textWords.get(indexInText).toString());
+            if (textWords.get(indexInText).charAt(0)=='('||textWords.get(indexInText).charAt(textWords.get(indexInText).length()-1)=='*'){
+                wordIsCalculated(textWords.get(indexInText));
             }
-            insertToWordsList(term);
+            //check between
+            else if (textWords.get(indexInText).equals("between")){
+                wordIsBetween(textWords);
             }
-
-
-
+            else if(textWords.get(indexInText).matches("\\-")){
+                insertToWordsList(textWords.get(indexInText),indexInText);
+            }
             //if the word is a number
-            else if (number.check(words[indexInSentence])) {
-                words[indexInSentence] = number.change(words, indexInSentence);
-                indexInSentence++;
+            else if (number.check(textWords.get(indexInText))) {
+                //textWords.get(indexInText) = number.change(words, indexInText);
             }
             //the word is a term
             else
             {
-                insertToWordsList(words[indexInSentence]);
-                indexInSentence++;
+                insertToStemmingList(textWords.get(indexInText),indexInText);
             }
         }
-
-        //dictionary.send(newWords,docnum);
-
+        System.out.println("");
     }
-
-    private boolean wordIsBetween(String[] words) {
-        if (words[indexInSentence].equals("between") || words[indexInSentence].equals("Between")) {
-            if (words[indexInSentence + 1] != null && number.check(words[indexInSentence + 1])) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-        /**
-         * this method is a sub method of parse in case of the term is entity, it will add the term to entites data base and check for the next word recursively.
-         * @param words
-         */
 
 
 
     /**
-     * this method will insert a word to the list, if the word is already there, then the counter will increase by 1.
-     * @param word
+     * this func tranforms the text with regex
      */
-    public void insertToWordsList(String word){
-        //if the word is in the list - value++
-        if (newWords.containsKey(word)){
-            newWords.put(word,newWords.get(word)+1);
+
+    public void regexTransforms (){
+
+
+        //replace percent or percentage to %
+        doc = doc.replaceAll("\\%|\\s\\bpercent\\b|\\s\\bpercentage\\b", "%**");
+
+        //replace Thousand to K
+        doc = doc.replaceAll("\\s\\b(Thousand)\\b|\\s\\bthousand\\b","K");
+
+        //replace million to M
+        doc = doc.replaceAll("\\s\\b(Million)\\b|\\s\\bmillion\\b|\\s\\bm\\b\\sd","M");
+
+        //replace Billion to B
+        doc = doc.replaceAll("\\s\\b(Billion)\\b|\\s\\bbillion\\b|\\s\\bbn\\b\\s|\\s\\bb\\b\\s","B");
+
+        //replace U.S. dollars to Dollars
+        doc = doc.replaceAll("\\s\\b(U.S.) dollars\\b| \\s\\b(U.S.) (Dollars)\\b "," (Dollars)");
+    }
+
+    /**
+     * this method create terms from a word that already been calculated
+     *
+     */
+
+    private void wordIsCalculated(String word) {
+        //if the word is (Captial letter at the beginning)
+        if (word.charAt(0)=='('){
+            word = word.substring(1, word.length() - 1);
+            insertToWordsList(word,indexInText);
+
+         //percent word
+        }else if(word.charAt(word.length()-1)=='*'){
+            word = word.substring(0, word.length() - 1);
+            insertToWordsList(word,indexInText);
+            //add to dictionary (word,docIndex,position)
+        // a word or number that contains '-' inside
         }else{
-            newWords.put(word,1);
+            insertToWordsList(word,indexInText);
         }
     }
 
-    private String removeStopWords() throws IOException {
+    /**
+     * between function - parse to dictionary between 7 and seven = 6-7
+     * @param textWords
+     */
+    public void wordIsBetween(ArrayList<String> textWords) {
 
-        List stopwords = Files.readAllLines(Paths.get(path+ "\\05 stop_words.txt"));
-        ArrayList<String> allWords = Stream.of(doc.toLowerCase()
-                .split(" "))
-                .collect(Collectors.toCollection(ArrayList<String>::new));
-        allWords.removeAll(stopwords);
-        return allWords.stream().collect(Collectors.joining(" "));
+        if (indexInText+2<textWords.size()&& textWords.get(indexInText+1).chars().allMatch(Character::isDigit)&& textWords.get(indexInText+2).chars().allMatch(Character::isDigit)){
+            String temp = textWords.get(indexInText+1)+"-"+textWords.get(indexInText+2);
+            insertToWordsList(temp,indexInText);
+            indexInText +=3;
+        }
+
     }
 
 
+
+
+
+
+
+    /**
+     * this method is a sub method of parse that remove all the stop words.
+     */
+    private String removeStopWords() throws IOException {
+
+        ArrayList<String> allWords = Stream.of(doc.toLowerCase()
+                .split(" "))
+                .collect(Collectors.toCollection(ArrayList<String>::new));
+        allWords.removeAll(stopWords);
+        return allWords.stream().collect(Collectors.joining(" "));
+    }
+    /**
+     * this method is a sub method of parse in case of the term is entity, it will add the term to entites data base and check for the next word recursively.
+     */
+
     public String addToEntity(){
         ArrayList<String> allWords = new ArrayList<String>(Arrays.asList(doc.split(" +")));
+        allWords.remove(new String(""));
         for (int i=0;i<allWords.size();i++){
             if (Character.isUpperCase(allWords.get(i).charAt(0))){
+                //if its not in the start of a sentence
+                if (i>0 && isStartOfSentence(allWords.get(i-1))){
+                    allWords.set(i-1,allWords.get(i-1).substring(0, allWords.get(i-1).length() - 1));
+                    continue;
+                }
+                if(i>0&&i+1<allWords.size()&& isMonth(allWords.get(i),allWords.get(i-1),allWords.get(i+1))){
+                    allWords = dateChange(allWords,i);
+                    continue;
+                }
                 String entity = allWords.get(i);
-                //check with stop words todo
-                allWords.set(i,allWords.get(i)+ "*");
+                if(!isStopWord(allWords.get(i))){
+
+                    allWords.set(i,"("+ allWords.get(i)+")");
+                }
                 i++;
                 while(i<allWords.size()&& Character.isUpperCase(allWords.get(i).charAt(0))){
+                    if (i>0 && isStartOfSentence(entity)){
+                        entity = entity.substring(0,entity.length()-1);
+                        allWords.set(i-1,allWords.get(i-1).substring(0, allWords.get(i-1).length() - 2)+")");
+                        i++;
+                        continue;
+                    }
+                    if(i+1<allWords.size()&&isMonth(allWords.get(i),allWords.get(i-1),allWords.get(i)+1)){
+                        allWords = dateChange(allWords,i);
+                        continue;
+                    }
                     entity = entity + " " + allWords.get(i);
-                    allWords.set(i,allWords.get(i)+ "*");
+                    if(!isStopWord(allWords.get(i))){
+                        allWords.set(i,"("+allWords.get(i)+ ")");
+                    }
                     i++;
+                }
+                if (entity.charAt(entity.length()-1)=='.'){
+                    entity = entity.substring(0,entity.length()-1);
                 }
 
                 if (entities.containsKey(entity)){
@@ -202,13 +242,95 @@ public class Parser {
             }
         }
 
+        //delete last dot
+        allWords.set(allWords.size()-1,deleteLastDoc(allWords.get(allWords.size()-1)));
+
         return allWords.stream().collect(Collectors.joining(" "));
     }
 
-
-    public void numberCheck(){
+    private String deleteLastDoc(String s) {
+        if (s.charAt(s.length()-1)==')')
+            return s.substring(0, s.length() - 2)+")";
+        return s.substring(0, s.length() - 1);
 
     }
 
+
+    /**
+     * a sub method to at to entity to check if a given word is not at a start of a sentence
+     * @param s
+     * @return
+     */
+    private boolean isStartOfSentence(String s) {
+        if (s.charAt(s.length()-1)=='.'){
+            return true;
+        }else if(s.length()>1 && s.charAt(s.length()-2)=='.'){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * this method change the dates
+     * @param allWords
+     * @param i
+     * @return
+     */
+
+    public ArrayList<String> dateChange(ArrayList<String> allWords, int i) {
+        if (i>0 && allWords.get(i-1).chars().allMatch(Character::isDigit)){
+            //send to date function (allWords.get(i), allWords.get(i-1))
+            allWords.set(i,date.changeToDate(allWords.get(i), allWords.get(i-1)));
+            allWords.set(i-1,"the");
+        } else if (i<allWords.size()-1 && allWords.get(i+1).chars().allMatch(Character::isDigit)){
+            //send to date function (allWords.get(i), allWords.get(i+1))
+            allWords.set(i,date.changeToDate(allWords.get(i), allWords.get(i+1)));
+            allWords.set(i+1,"the");
+        }
+        return allWords;
+    }
+
+    /**
+     * this method check if a given word is a stop word
+     * @param word
+     * @return
+     */
+    private boolean isStopWord(String word) {
+        word = word.toLowerCase();
+        if (stopWords.contains(word)){
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * this method check if a given word is a month
+     * @param word
+     * @return
+     */
+
+    public boolean isMonth(String word,String lastWord,String nextWord){
+        String month = "([Jj][Aa][Nn](?:[Uu][Aa][Rr][Yy])?|[Ff][Ee][Bb](?:[Rr][Uu][Aa][Rr][Yy])?|[Mm][Aa][Rr](?:[Cc][Hh])?|[Aa][Pp][Rr](?:[Ii][Ll])?|[Mm][Aa][Yy]?|[Jj][Uu][Nn](?:[Ee])?|[Jj][Uu][Ll](?:[Yy])?|[Aa][Uu][Gg](?:[Uu][Ss][Tt])?|[Ss][Ee][Pp](?:[Tt][Ee][Mm][Bb][Ee][Rr])?|[Oo][Cc][Tt](?:[Oo][Bb][Ee][Rr])?|[Nn][Oo][Vv](?:[Ee][Mm][Bb][Ee][Rr])?|[Dd][Ee][Cc](?:[Ee][Mm][Bb][Ee][Rr])?)";
+        Pattern p = Pattern.compile("^"+month+"$");
+        Matcher m = p.matcher(word);
+        if (m.find()){
+            if(lastWord.chars().allMatch(Character::isDigit)||nextWord.chars().allMatch(Character::isDigit))
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * this method will insert a word to the list, if the word is already there, then the counter will increase by 1.
+     * @param word
+     */
+    public void insertToWordsList(String word,int position){
+        wordsList.put(word,position);
+    }
+
+    public void insertToStemmingList(String word,int position){
+        stemmingList.put(word,position);
+    }
 
 }

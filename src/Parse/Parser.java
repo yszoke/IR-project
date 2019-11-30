@@ -126,7 +126,7 @@ public class Parser {
     {
 
         String word=textWords.get(indexInText);
-        if (((word.length() > 0) && (word.charAt(0) == '$')) || ((indexInText < textWords.size() - 1) && (textWords.get(indexInText+1).equals("(dollars)")||textWords.get(indexInText+1).contains("/")))){
+        if (((word.length() > 0) && (word.charAt(0) == '$')) || (Character.isDigit(word.charAt(0))&&(indexInText < textWords.size() - 1) && (textWords.get(indexInText+1).equals("(dollars)")||textWords.get(indexInText+1).contains("/")))){
             return true;
         }
         return false;
@@ -190,7 +190,7 @@ public class Parser {
             insertToWordsList(word,indexInText);
 
          //percent word
-        }else if(word.charAt(word.length()-1)=='*'){
+        }else if(word.length()>1&&word.charAt(word.length()-1)=='*'&&word.charAt(word.length()-2)=='*'){
             word = word.substring(0, word.length() - 2);
             insertToWordsList(word,indexInText);
             //add to dictionary (word,docIndex,position)
@@ -340,7 +340,7 @@ public class Parser {
     private boolean isStartOfSentence(String s) {
         if (s.charAt(s.length()-1)=='.'){
             return true;
-        }else if(s.length()>1 && s.charAt(s.length()-2)=='.'){
+        }else if(s.length()>1 && s.charAt(s.length()-2)=='.' && s.charAt(s.length()-1)==')'){
             return true;
         }
         return false;

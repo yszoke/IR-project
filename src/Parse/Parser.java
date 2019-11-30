@@ -6,6 +6,7 @@ package Parse;
 
 import invertedIndex.Dictionary;
 
+import javax.swing.text.html.parser.Entity;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -192,12 +193,17 @@ public class Parser {
         ArrayList<String> allWords = new ArrayList<String>(Arrays.asList(doc.split(" +")));
         allWords.remove(new String(""));
         for (int i=0;i<allWords.size();i++){
-            if (Character.isUpperCase(allWords.get(i).charAt(0))){
+            if (isUpperCase(i, allWords)){
+                //if its bigger than one letter
+                if (allWords.get(i).length()<2){
+                    continue;
+                }
                 //if its not in the start of a sentence
                 if (i>0 && isStartOfSentence(allWords.get(i-1))){
                     allWords.set(i-1,allWords.get(i-1).substring(0, allWords.get(i-1).length() - 1));
                     continue;
                 }
+
                 if(i>0&&i+1<allWords.size()&& isMonth(allWords.get(i),allWords.get(i-1),allWords.get(i+1))){
                     allWords = dateChange(allWords,i);
                     continue;
@@ -208,16 +214,20 @@ public class Parser {
                     allWords.set(i,"("+ allWords.get(i)+")");
                 }
                 i++;
-                while(i<allWords.size()&& Character.isUpperCase(allWords.get(i).charAt(0))){
-                    if (i>0 && isStartOfSentence(entity)){
+                while(isUpperCase(i, allWords)){////////////////////////////////////////
+                    if (allWords.get(i).length()<2){
+                        i++;
+                        break;
+                    }
+                    if (i>0 && isStartOfSentence(allWords.get(i-1))){
                         entity = entity.substring(0,entity.length()-1);
                         allWords.set(i-1,allWords.get(i-1).substring(0, allWords.get(i-1).length() - 2)+")");
                         i++;
-                        continue;
+                        break;
                     }
                     if(i+1<allWords.size()&&isMonth(allWords.get(i),allWords.get(i-1),allWords.get(i)+1)){
                         allWords = dateChange(allWords,i);
-                        continue;
+                        break;
                     }
                     entity = entity + " " + allWords.get(i);
                     if(!isStopWord(allWords.get(i))){
@@ -225,20 +235,13 @@ public class Parser {
                     }
                     i++;
                 }
+                //delete last dot if exist
                 if (entity.charAt(entity.length()-1)=='.'){
                     entity = entity.substring(0,entity.length()-1);
                 }
 
-                if (entities.containsKey(entity)){
+                addToEntityList( entity);
 
-                    Term term = entities.get(entity);
-                    //update exist term
-                    term = term.add(indexDoc);
-                    entities.put(entity,term);
-                }else {
-                    Term term = new Term(entity,indexDoc);
-                    entities.put(entity,term);
-                }
             }
         }
 
@@ -246,6 +249,26 @@ public class Parser {
         allWords.set(allWords.size()-1,deleteLastDoc(allWords.get(allWords.size()-1)));
 
         return allWords.stream().collect(Collectors.joining(" "));
+    }
+
+    private void addToEntityList(String entity) {
+        if (entities.containsKey(entity)){
+            Term term = entities.get(entity);
+            //update exist term
+            term = term.add(indexDoc);
+            entities.put(entity,term);
+        }else {
+            Term term = new Term(entity,indexDoc);
+            entities.put(entity,term);
+        }
+    }
+
+
+    private boolean isUpperCase(int i, ArrayList<String> allWords ){
+        if (i<allWords.size()&& Character.isUpperCase(allWords.get(i).charAt(0))){
+            return true;
+        }
+        return false;
     }
 
     private String deleteLastDoc(String s) {
@@ -311,7 +334,7 @@ public class Parser {
      */
 
     public boolean isMonth(String word,String lastWord,String nextWord){
-        String month = "([Jj][Aa][Nn](?:[Uu][Aa][Rr][Yy])?|[Ff][Ee][Bb](?:[Rr][Uu][Aa][Rr][Yy])?|[Mm][Aa][Rr](?:[Cc][Hh])?|[Aa][Pp][Rr](?:[Ii][Ll])?|[Mm][Aa][Yy]?|[Jj][Uu][Nn](?:[Ee])?|[Jj][Uu][Ll](?:[Yy])?|[Aa][Uu][Gg](?:[Uu][Ss][Tt])?|[Ss][Ee][Pp](?:[Tt][Ee][Mm][Bb][Ee][Rr])?|[Oo][Cc][Tt](?:[Oo][Bb][Ee][Rr])?|[Nn][Oo][Vv](?:[Ee][Mm][Bb][Ee][Rr])?|[Dd][Ee][Cc](?:[Ee][Mm][Bb][Ee][Rr])?)";
+        String month = "([Jj][Aa][Nn](?:[Uu][Aa][Rr][Yy])?|[Ff][Ee][Bb](?:[Rr][Uu][Aa][Rr][Yy])?|[Mm][Aa][Rr](?:[Cc][Hh])?|[Aa][Pp][Rr](?:[Ii][Ll])?|\\bMAY\\b|\\bMay\\b|\\bmay\\b|[Jj][Uu][Nn](?:[Ee])?|[Jj][Uu][Ll](?:[Yy])?|[Aa][Uu][Gg](?:[Uu][Ss][Tt])?|[Ss][Ee][Pp](?:[Tt][Ee][Mm][Bb][Ee][Rr])?|[Oo][Cc][Tt](?:[Oo][Bb][Ee][Rr])?|[Nn][Oo][Vv](?:[Ee][Mm][Bb][Ee][Rr])?|[Dd][Ee][Cc](?:[Ee][Mm][Bb][Ee][Rr])?)";
         Pattern p = Pattern.compile("^"+month+"$");
         Matcher m = p.matcher(word);
         if (m.find()){

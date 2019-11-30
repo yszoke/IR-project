@@ -400,6 +400,7 @@ public class regexTest {
         }
 
          */
+        checkMonths();
         replacement(text1);
         stopWordsStandart("try");
 
@@ -438,6 +439,7 @@ public class regexTest {
     private static void replacement(String text){
         //replace percent or percentage to %
         text = "omer's (is) . 9.3, 9,3 9'6";
+
         text = text.replaceAll(",\\s|,|\\.\\s|\\)|\\(|\\W\\bs\\b", " ");
         System.out.println(text);
         text = text.replaceAll("\\%|\\s\\bpercent\\b|\\s\\bpercentage\\b", "%");
@@ -496,8 +498,16 @@ public class regexTest {
         ArrayList<ArrayList<Integer>> arrayLists = new ArrayList<>();
         arrayLists.add(test);
 
+    }
 
-
+    public static void checkMonths (){
+        String text = "Ma";
+        String month = "([Jj][Aa][Nn](?:[Uu][Aa][Rr][Yy])?|[Ff][Ee][Bb](?:[Rr][Uu][Aa][Rr][Yy])?|[Mm][Aa][Rr](?:[Cc][Hh])?|[Aa][Pp][Rr](?:[Ii][Ll])?|\\bMAY\\b|\\bMay\\b|\\bmay\\b|[Jj][Uu][Nn](?:[Ee])?|[Jj][Uu][Ll](?:[Yy])?|[Aa][Uu][Gg](?:[Uu][Ss][Tt])?|[Ss][Ee][Pp](?:[Tt][Ee][Mm][Bb][Ee][Rr])?|[Oo][Cc][Tt](?:[Oo][Bb][Ee][Rr])?|[Nn][Oo][Vv](?:[Ee][Mm][Bb][Ee][Rr])?|[Dd][Ee][Cc](?:[Ee][Mm][Bb][Ee][Rr])?)";
+        Pattern p = Pattern.compile("^"+month+"$");
+        Matcher m = p.matcher(text);
+        if (m.find()){
+            System.out.println("successes");
+        }
     }
 
 }

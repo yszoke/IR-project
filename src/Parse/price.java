@@ -8,6 +8,7 @@ public class price {
     public static String change(ArrayList<String> textWords, int counter){
         boolean addDollars=false;
         String word=textWords.get(counter);
+        word = word.replaceAll(",","");
         char last=word.charAt(word.length()-1);
 
         if(word.charAt(0)=='$'){

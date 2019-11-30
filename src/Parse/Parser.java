@@ -27,7 +27,7 @@ public class Parser {
     private String doc;
     private HashMap<String,Integer> wordsList;
     private HashMap<String,Integer> stemmingList;
-    private HashMap<String,Term> entities;
+    private static HashMap<String,ArrayList<Integer>> entities = new HashMap<>();
     private Dictionary dictionary;
 
     //private StopWords stopWords;
@@ -43,7 +43,7 @@ public class Parser {
         this.doc = doc;
         this.path = path;
         this.date= new date();
-        this.entities=new HashMap<>();
+        //this.entities=new HashMap<>();
         this.wordsList =new HashMap<>();
         this.stemmingList = new HashMap<>();
         this.stopWords = Files.readAllLines(Paths.get(path+ "\\05 stop_words.txt"));
@@ -64,7 +64,7 @@ public class Parser {
     public void parse() throws IOException {
 
         //remove dots and commas
-        doc = doc.replaceAll(",\\s|,|\\?|\\!|\\.,|\\)|\\(|\\-{2,}|\\:|\\;|\\]|\\[|[\"]|\\W\\bs\\b|[a-zA-Z]+\\s\\bpercent\\b|[a-zA-Z]+\\s\\bpercentage\\b", " ");
+        doc = doc.replaceAll(",\\s|\\?|\\!|\\.,|\\)|\\(|\\-{2,}|\\:|\\;|\\]|\\[|[\"]|\\W\\bs\\b|[a-zA-Z]+\\s\\bpercent\\b|[a-zA-Z]+\\s\\bpercentage\\b", " ");
 
         //entity and date removal
         doc = addToEntity();
@@ -91,7 +91,7 @@ public class Parser {
             else if (textWords.get(indexInText).equals("between")){
                 wordIsBetween(textWords);
             }
-            else if(textWords.get(indexInText).matches("\\-")){
+            else if(textWords.get(indexInText).contains("-")){
                 insertToWordsList(textWords.get(indexInText),indexInText);
             }
             //if the word is a price
@@ -103,8 +103,11 @@ public class Parser {
             else if (number.check(textWords.get(indexInText))) {
                 //textWords.get(indexInText) = number.change(words, indexInText);
                 insertToWordsList(number.change(textWords,indexInText),indexInText);
-                indexInText++;
+            //if the number contains digit insert to wordsLIst
+            } else if(textWords.get(indexInText).matches(".*\\d.*")){
+                insertToWordsList(textWords.get(indexInText),indexInText);
             }
+
             //the word is a term
             else
             {
@@ -123,7 +126,7 @@ public class Parser {
     {
 
         String word=textWords.get(indexInText);
-        if (((word.length() > 0) && (word.charAt(0) == '$')) || ((indexInText < textWords.size() - 1) && (textWords.get(indexInText+1).equals("Dollars")||textWords.get(indexInText+1).contains("/")))){
+        if (((word.length() > 0) && (word.charAt(0) == '$')) || ((indexInText < textWords.size() - 1) && (textWords.get(indexInText+1).equals("(dollars)")||textWords.get(indexInText+1).contains("/")))){
             return true;
         }
         return false;
@@ -132,8 +135,8 @@ public class Parser {
     private String changePrice(ArrayList<String> textWords) {
         String result = "";
         String word = textWords.get(indexInText);
-        if ((word.length() > 0) && (word.charAt(0) == '$' || (indexInText < textWords.size() - 1 && textWords.get(indexInText + 1).equals("Dollars")))) {
-            if (indexInText < textWords.size() - 1 &&textWords.get(indexInText + 1).equals("Dollars")) {
+        if ((word.length() > 0) && (word.charAt(0) == '$' || (indexInText < textWords.size() - 1 && textWords.get(indexInText + 1).equals("(dollars)")))) {
+            if (indexInText < textWords.size() - 1 &&textWords.get(indexInText + 1).equals("(dollars)")) {
                 result = price.change(textWords, indexInText) + " Dollars";
                 indexInText++;
             } else {
@@ -143,13 +146,12 @@ public class Parser {
         } else if (indexInText < textWords.size() - 1 &&textWords.get(indexInText + 1).contains("/")) {
             result = price.change(textWords, indexInText) + " " + textWords.get(indexInText + 1);
             indexInText++;
-            if (indexInText < textWords.size() - 1 && textWords.get(indexInText + 1).equals("Dollars")) {
+            if (indexInText < textWords.size() - 1 && textWords.get(indexInText + 1).equals("(dollars)")) {
                 result = result + " Dollars";
                 indexInText++;
             }
         }
         //System.out.println(result);
-        indexInText++;
         return result;
     }
 
@@ -164,16 +166,16 @@ public class Parser {
         doc = doc.replaceAll("\\%|\\s\\bpercent\\b|\\s\\bpercentage\\b", "%**");
 
         //replace Thousand to K
-        doc = doc.replaceAll("\\s\\b(Thousand)\\b|\\s\\bthousand\\b","K");
+        doc = doc.replaceAll("\\s\\(\\bthousand\\b\\)|\\s\\bthousand\\b","K");
 
         //replace million to M
-        doc = doc.replaceAll("\\s\\b(Million)\\b|\\s\\bmillion\\b|\\s\\bm\\b\\sd","M");
+        doc = doc.replaceAll("\\s\\(\\bmillion\\b\\)|\\s\\bmillion\\b|\\s\\bm\\b\\sd","M");
 
         //replace Billion to B
-        doc = doc.replaceAll("\\s\\b(Billion)\\b|\\s\\bbillion\\b|\\s\\bbn\\b\\s|\\s\\bb\\b\\s","B");
+        doc = doc.replaceAll("\\s\\(\\bbillion\\b\\)|\\s\\bbillion\\b|\\s\\bbn\\b\\s|\\s\\bb\\b\\s","B");
 
         //replace U.S. dollars to Dollars
-        doc = doc.replaceAll("\\s\\b(U.S.) dollars\\b| \\s\\b(U.S.) (Dollars)\\b "," (Dollars)");
+        doc = doc.replaceAll("\\s\\(\\bu\\b\\.\\bs\\b\\.\\)\\s\\bdollars\\b|\\s\\(\\bu\\b\\.\\bs\\b\\.\\)\\s\\(\\bdollars\\b\\) "," (dollars)");
     }
 
     /**
@@ -189,7 +191,7 @@ public class Parser {
 
          //percent word
         }else if(word.charAt(word.length()-1)=='*'){
-            word = word.substring(0, word.length() - 1);
+            word = word.substring(0, word.length() - 2);
             insertToWordsList(word,indexInText);
             //add to dictionary (word,docIndex,position)
         // a word or number that contains '-' inside
@@ -222,6 +224,7 @@ public class Parser {
      * this method is a sub method of parse that remove all the stop words.
      */
     private String removeStopWords() throws IOException {
+        stopWords.remove("between");
 
         ArrayList<String> allWords = Stream.of(doc.toLowerCase()
                 .split(" "))
@@ -276,6 +279,9 @@ public class Parser {
                         allWords = dateChange(allWords,i);
                         break;
                     }
+                    if (allWords.get(i).length()==2&&allWords.get(i).charAt(1)=='.'){
+                        allWords.set(i,allWords.get(i).substring(0,1));
+                    }
                     entity = entity + " " + allWords.get(i);
                     if(!isStopWord(allWords.get(i))){
                         allWords.set(i,"("+allWords.get(i)+ ")");
@@ -300,13 +306,13 @@ public class Parser {
 
     private void addToEntityList(String entity) {
         if (entities.containsKey(entity)){
-            Term term = entities.get(entity);
-            //update exist term
-            term = term.add(indexDoc);
-            entities.put(entity,term);
+            if(!entities.get(entity).contains(indexDoc)){
+                entities.get(entity).add(indexDoc);
+            }
         }else {
-            Term term = new Term(entity,indexDoc);
-            entities.put(entity,term);
+            ArrayList<Integer> temp = new ArrayList<>();
+            entities.put(entity,temp);
+            entities.get(entity).add(indexDoc);
         }
     }
 

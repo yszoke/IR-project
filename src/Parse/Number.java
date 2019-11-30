@@ -1,5 +1,6 @@
 package Parse;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class Number {
@@ -7,6 +8,7 @@ public class Number {
 
     public boolean check(String word) {
         char firstChar = word.charAt(0);
+        word = word.replaceAll(",","");
         if (Character.isDigit(firstChar) && word.matches("[0-9]+|[0-9]++\\b\\.\\b+[0-9]+")) {
             return true;
 
@@ -17,13 +19,13 @@ public class Number {
     public String change(ArrayList<String> textWords, int index) {
         double doubleNum;
         String word=textWords.get(index);
-
+        word = word.replaceAll(",","");
         doubleNum = Double.valueOf(word);
 
         if (doubleNum >= 1000000000) {
             doubleNum = doubleNum / 1000000000;
-            double scale = Math.pow(10, 3);
-            doubleNum = Math.round(doubleNum * scale) / scale;
+            int intNum = (int)(doubleNum*1000);
+            doubleNum=(double) intNum/1000;
             if ((doubleNum % 1) == 0) {
                 word = "" + (int) doubleNum + "B";
             } else {
@@ -32,8 +34,8 @@ public class Number {
             System.out.println(word);
         } else if (doubleNum >= 1000000) {
             doubleNum = doubleNum / 1000000;
-            double scale = Math.pow(10, 3);
-            doubleNum = Math.round(doubleNum * scale) / scale;
+            int intNum = (int)(doubleNum*1000);
+            doubleNum=(double) intNum/1000;
             if ((doubleNum % 1) == 0) {
                 word = "" + (int) doubleNum + "M";
             } else {
@@ -43,8 +45,8 @@ public class Number {
 
         } else if (doubleNum >= 1000) {
             doubleNum = doubleNum / 1000;
-            double scale = Math.pow(10, 3);
-            doubleNum = Math.round(doubleNum * scale) / scale;
+            int intNum = (int)(doubleNum*1000);
+            doubleNum=(double) intNum/1000;
             if ((doubleNum % 1) == 0) {
                 word = "" + (int) doubleNum + "K";
             } else {

@@ -41,15 +41,15 @@ public class testprice {
         while (counter<words.length){
             if ((words[counter] != null && words[counter].length() > 0) && (words[counter].charAt(0) == '$' || (counter < words.length - 1 && words[counter + 1].equals("Dollars")))) {
                 if (counter < words.length - 1 && words[counter+1] != null &&  words[counter + 1].equals("Dollars")) {
-                    result = price.change(words, counter) + " Dollars";
+                    //result = price.change(words, counter) + " Dollars";
                     counter++;
                 } else {
-                    result = price.change(words, counter);
+                    //result = price.change(words, counter);
 
                 }
             }
             else if (counter < words.length - 1 && words[counter+1] != null && words[counter + 1].contains("/")) {
-                result = price.change(words, counter) + " " + words[counter + 1];
+                //result = price.change(words, counter) + " " + words[counter + 1];
                 counter++;
                 if (counter < words.length - 1 && words[counter + 1].equals("Dollars")) {
                     result = result + " Dollars";

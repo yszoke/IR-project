@@ -19,7 +19,7 @@ public class testsParser {
 
     public static void main(String[] args) throws IOException {
         int docIndex = 1;
-        String pathForStopWords = "C:\\Users\\ohoff\\Documents\\information retrieval\\corpus";
+        String pathForStopWords = "C:\\Users\\yszok\\Desktop\\IR project";
         String sentence1 = "Lorem Ipsum is simply dummy text of the Printing and typesetting industry";
         String sentence2 = "The Mongolian Government and people gave wholehearted support to the " +
                 "Vietnamese people in their struggle for national liberation in " +
@@ -27,7 +27,7 @@ public class testsParser {
         String sentence3 = " We also provide-static-- electricity protection for filling and draining devices";
         Dictionary dic = new Dictionary();
         Parser parser = new Parser(docIndex,sentence1,pathForStopWords,dic);
-        File input = new File(pathForStopWords+"\\tests\\testForParse");
+        File input = new File(pathForStopWords+"\\test\\testForParse");
         generalTest(input,dic);
         //numberTest(parser);
         //entityTest(parser);
@@ -95,7 +95,7 @@ public class testsParser {
     private static void generalTest(File input, Dictionary dic) throws IOException {
         Document html = Jsoup.parse(input,"UTF-8","");
         Elements elements=  html.getElementsByTag("TEXT");
-        String pathForStopWords = "C:\\Users\\ohoff\\Documents\\information retrieval\\corpus";
+        String pathForStopWords = "C:\\Users\\yszok\\Desktop\\IR project";
         int counter = 1;
         for (Element element : elements) {
             System.out.println(counter);

@@ -94,9 +94,16 @@ public class Parser {
             else if(textWords.get(indexInText).matches("\\-")){
                 insertToWordsList(textWords.get(indexInText),indexInText);
             }
+            //if the word is a price
+            else if(checkPrice(textWords)){
+                insertToWordsList(changePrice(textWords),indexInText);
+            }
+
             //if the word is a number
             else if (number.check(textWords.get(indexInText))) {
                 //textWords.get(indexInText) = number.change(words, indexInText);
+                insertToWordsList(number.change(textWords,indexInText),indexInText);
+                indexInText++;
             }
             //the word is a term
             else
@@ -107,11 +114,48 @@ public class Parser {
         System.out.println("");
     }
 
-
-
     /**
-     * this func tranforms the text with regex
+     * this function check if its a price
+     * @param textWords
+     * @return
      */
+    private boolean checkPrice(ArrayList<String> textWords)
+    {
+
+        String word=textWords.get(indexInText);
+        if (((word.length() > 0) && (word.charAt(0) == '$')) || ((indexInText < textWords.size() - 1) && (textWords.get(indexInText+1).equals("Dollars")||textWords.get(indexInText+1).contains("/")))){
+            return true;
+        }
+        return false;
+    }
+
+    private String changePrice(ArrayList<String> textWords) {
+        String result = "";
+        String word = textWords.get(indexInText);
+        if ((word.length() > 0) && (word.charAt(0) == '$' || (indexInText < textWords.size() - 1 && textWords.get(indexInText + 1).equals("Dollars")))) {
+            if (indexInText < textWords.size() - 1 &&textWords.get(indexInText + 1).equals("Dollars")) {
+                result = price.change(textWords, indexInText) + " Dollars";
+                indexInText++;
+            } else {
+                result = price.change(textWords, indexInText);
+
+            }
+        } else if (indexInText < textWords.size() - 1 &&textWords.get(indexInText + 1).contains("/")) {
+            result = price.change(textWords, indexInText) + " " + textWords.get(indexInText + 1);
+            indexInText++;
+            if (indexInText < textWords.size() - 1 && textWords.get(indexInText + 1).equals("Dollars")) {
+                result = result + " Dollars";
+                indexInText++;
+            }
+        }
+        //System.out.println(result);
+        indexInText++;
+        return result;
+    }
+
+        /**
+         * this func tranforms the text with regex
+         */
 
     public void regexTransforms (){
 
@@ -197,6 +241,9 @@ public class Parser {
                 //if its bigger than one letter
                 if (allWords.get(i).length()<2){
                     continue;
+                }
+                if (allWords.get(i).length()==2&&allWords.get(i).charAt(1)=='.'){
+                    allWords.set(i,allWords.get(i).substring(0,1));
                 }
                 //if its not in the start of a sentence
                 if (i>0 && isStartOfSentence(allWords.get(i-1))){

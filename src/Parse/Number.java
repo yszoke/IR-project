@@ -14,56 +14,57 @@ public class Number {
         return false;
     }
 
-    public String change(String[] words, int index) {
+    public String change(ArrayList<String> textWords, int index) {
         double doubleNum;
+        String word=textWords.get(index);
 
-        doubleNum = Double.valueOf(words[index]);
+        doubleNum = Double.valueOf(word);
 
         if (doubleNum >= 1000000000) {
             doubleNum = doubleNum / 1000000000;
             double scale = Math.pow(10, 3);
             doubleNum = Math.round(doubleNum * scale) / scale;
             if ((doubleNum % 1) == 0) {
-                words[index] = "" + (int) doubleNum + "B";
+                word = "" + (int) doubleNum + "B";
             } else {
-                words[index] = "" + doubleNum + "B";
+                word = "" + doubleNum + "B";
             }
-            System.out.println(words[index]);
+            System.out.println(word);
         } else if (doubleNum >= 1000000) {
             doubleNum = doubleNum / 1000000;
             double scale = Math.pow(10, 3);
             doubleNum = Math.round(doubleNum * scale) / scale;
             if ((doubleNum % 1) == 0) {
-                words[index] = "" + (int) doubleNum + "M";
+                word = "" + (int) doubleNum + "M";
             } else {
-                words[index] = "" + doubleNum + "M";
+                word = "" + doubleNum + "M";
             }
-            System.out.println(words[index]);
+            //System.out.println(word);
 
         } else if (doubleNum >= 1000) {
             doubleNum = doubleNum / 1000;
             double scale = Math.pow(10, 3);
             doubleNum = Math.round(doubleNum * scale) / scale;
             if ((doubleNum % 1) == 0) {
-                words[index] = "" + (int) doubleNum + "K";
+                word = "" + (int) doubleNum + "K";
             } else {
-                words[index] = "" + doubleNum + "K";
+                word = "" + doubleNum + "K";
             }
-            System.out.println(words[index]);
+            //System.out.println(word);
 
         } else {
             double scale = Math.pow(10, 3);
             doubleNum = Math.round(doubleNum * scale) / scale;
             if ((doubleNum % 1) == 0) {
-                words[index] = "" + (int) doubleNum;
+                word = "" + (int) doubleNum;
             } else {
-                words[index] = "" + doubleNum;
+                word = "" + doubleNum;
             }
-            System.out.println(words[index]);
+            //System.out.println(word);
         }
 
         //insertToWordsList(words[index]);
-        return words[index];
+        return word;
 
     }
 }

@@ -1,9 +1,5 @@
 package Parse;
 
-
-
-
-
 import invertedIndex.Dictionary;
 
 import javax.swing.text.html.parser.Entity;
@@ -36,7 +32,7 @@ public class Parser {
     private List<String> stopWords;
     private String tempWord;
     private int indexInText;
-
+    private Stemmer stemmer;
 
     public Parser(int indexDoc, String doc, String path, Dictionary dictionary) throws IOException {
         this.indexDoc = indexDoc;
@@ -50,6 +46,7 @@ public class Parser {
         //this.stopWords=new StopWords(path);
         this.number= new Number();
         this.dictionary = dictionary;
+        this.stemmer=new Stemmer();
     }
 
 
@@ -406,7 +403,10 @@ public class Parser {
     }
 
     public void insertToStemmingList(String word,int position){
-        stemmingList.put(word,position);
+        char[] charAray=word.toCharArray();
+        stemmer.add(charAray,word.length());
+        stemmer.stem();
+        stemmingList.put(stemmer.toString(),position);
     }
 
 }

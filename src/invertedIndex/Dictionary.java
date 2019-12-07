@@ -6,72 +6,79 @@ import java.util.HashMap;
 public class Dictionary {
 
     private static HashMap<String, Term> dictionary = new HashMap<>();
-    private static String temDdocNum="";
-    private static String tempword="";
-    private static HashMap<Character,Integer> lineInPostingTable=new HashMap<>();
+    private static String tempDocNum = "";
+    private static String tempword = "";
+    private static HashMap<Character, Integer> lineInPostingTable = new HashMap<>();
+    private char cuurntLetter = '*';
 
-    public void addWordToDictionary(ArrayList<String> sortedTable){
-        for(String word: sortedTable){
+    private static HashMap<Character, String> currentPsting = new HashMap<>();
+
+    public void addWordToDictionary(ArrayList<String> sortedTable) {
+        for (String word : sortedTable) {
             String[] temp = word.split(" ");
-
+            //get the first char of the word
+            char firstLetter = getFirstLetter(temp[0]);
+            int line;
+            //check if we need to change the posting
+            if (firstLetter != cuurntLetter) {
+                //todo change file
+                cuurntLetter = firstLetter;
+            }
             //if the word is already in the dictionary
             if (dictionary.containsKey(temp[0])) {
-                Term termToChange = dictionary.get(temp[0]);
-                if (tempword != temp[0] || temDdocNum != temp[1]) {
-                    termToChange.increaseNDocs();
-                    dictionary.put(temp[0], termToChange);
+                //check if the word and the doc is the same as before (different location)-just need to write to posting
+                if (tempDocNum != temp[1] || tempword != temp[0]) {
+                    dictionary.get(temp[0]).increaseNDocs();
+                    tempDocNum = temp[1];
+                    tempword = temp[0];
                 }
-                writeToPosting(temp[0], temp[1], temp[2], termToChange.getLineInPosting());
-
-                //if word is not in the dictionary, create it
             }
+            //if word is not in the dictionary, create it
             else {
-                Term termToCreate = new Term(getLineInPosting(String temp[0]));
-                dictionary.put(temp[0],termToCreate);
-                writeToPosting(temp[0],temp[1],temp[2],termToCreate.getLineInPosting());
+                //todo maybe create the file
+                //getLine: gives you the line in your posting
+                line = getLine(firstLetter);
+                Term term = new Term(1, line);
+                dictionary.put(temp[0], term);
             }
-            tempword=temp[0];
-            temDdocNum=temp[1];
+            //write to posting
+            writeToPosting(temp[0], temp[1], temp[2], dictionary.get(temp[0]).getLineInPosting());
+            tempword = temp[0];
+            tempDocNum = temp[1];
         }
+    }
+
+    /**
+     * this function get a letter and found the next line in the posting for this letter
+     * @param firstLetter
+     * @return a number of a line
+     */
+    private int getLine(char firstLetter) {
+        if (lineInPostingTable.containsKey(firstLetter)) {
+            int line = lineInPostingTable.get(lineInPostingTable);
+            lineInPostingTable.put(firstLetter, line + 1);
+            return line;
+        } else {
+            lineInPostingTable.put(firstLetter, 1);
+            return 0;
+        }
+    }
+
+    /**
+     * this function get a word and return the character that represent the file name
+     * @param word
+     * @return the character that represent the file name
+     */
+    private char getFirstLetter(String word) {
+        char temp = word.charAt(0);
+        if (Character.isLetter(temp)) {
+            return temp;
+        }
+        return '*';
     }
 
     private void writeToPosting(String word, String docIndex, String position, int lineInPosting) {
-        //if we know the position in the posting file
-        if (lineInPosting!=-1){
-            char firstLetter=word.charAt(0);
-            if(!Character.isLetter(firstLetter)){
-                firstLetter='*';
-            }
-            if(lineInPostingTable.containsKey(firstLetter)){
-                //todo write to firstLetter file to lineInPostingTable.value line
-                lineInPostingTable.put(firstLetter, lineInPostingTable.get(lineInPostingTable) + 1);
-            }
-            else{
-                lineInPostingTable.put(firstLetter,1);
-
-            }
-
-        }
-
+        //todo write: we have the current letter and the posting in Array
     }
-
-    /**
-     * this method checks if a term is already in the dictionary
-     * @param term
-     * @return
-     */
-    public boolean isInDictionary(Term term){
-        return true;
-    }
-
-    /**
-     * this method checks for a given term and a doc index - if the term existed in the doc index
-     * @param term
-     * @param docIndex
-     * @return
-     */
-    public boolean isInDocIndex(Term term, int docIndex){
-        return true;
-    }
-
 }
+

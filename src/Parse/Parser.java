@@ -1,6 +1,7 @@
 package Parse;
 
 import invertedIndex.Dictionary;
+import invertedIndex.step1;
 
 import javax.swing.text.html.parser.Entity;
 import java.io.IOException;
@@ -25,6 +26,7 @@ public class Parser {
     private HashMap<String,Integer> stemmingList;
     private static HashMap<String,ArrayList<Integer>> entities = new HashMap<>();
     private Dictionary dictionary;
+    private step1 step1;
 
     //private StopWords stopWords;
     private Number number;
@@ -33,6 +35,8 @@ public class Parser {
     private String tempWord;
     private int indexInText;
     private Stemmer stemmer;
+
+    private static HashMap<String,ArrayList<Integer>> bigWordList = new HashMap<>();
 
     public Parser(int indexDoc, String doc, String path, Dictionary dictionary) throws IOException {
         this.indexDoc = indexDoc;
@@ -47,6 +51,7 @@ public class Parser {
         this.number= new Number();
         this.dictionary = dictionary;
         this.stemmer=new Stemmer();
+        this.step1=new step1();
     }
 
 
@@ -108,7 +113,12 @@ public class Parser {
             //the word is a term
             else
             {
-                insertToStemmingList(textWords.get(indexInText),indexInText);
+                //remove dot
+                if(textWords.get(indexInText).charAt(textWords.get(indexInText).length()-1)=='.'){
+                    textWords.set(indexInText, textWords.get(indexInText).substring(0,textWords.get(indexInText).length()-1));
+                }
+                //if the user want stemming todo
+                    insertToStemmingList(textWords.get(indexInText), indexInText);
             }
         }
         System.out.println("");
@@ -184,7 +194,7 @@ public class Parser {
         //if the word is (Captial letter at the beginning)
         if (word.charAt(0)=='('){
             word = word.substring(1, word.length() - 1);
-            insertToWordsList(word,indexInText);
+                //todo insert to BigWordList
 
          //percent word
         }else if(word.length()>1&&word.charAt(word.length()-1)=='*'&&word.charAt(word.length()-2)=='*'){
@@ -399,14 +409,17 @@ public class Parser {
      * @param word
      */
     public void insertToWordsList(String word,int position){
-        wordsList.put(word,position);
+
+        //wordsList.put(word,position);
+        step1.addToTable(word, indexDoc, position);
     }
 
     public void insertToStemmingList(String word,int position){
         char[] charAray=word.toCharArray();
         stemmer.add(charAray,word.length());
         stemmer.stem();
-        stemmingList.put(stemmer.toString(),position);
+        //stemmingList.put(stemmer.toString(),position);
+        step1.addToTable(stemmer.toString(), indexDoc, position);
     }
 
 }

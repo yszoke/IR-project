@@ -1,9 +1,7 @@
 package Parse;
 
-import invertedIndex.Dictionary;
 import invertedIndex.step1;
 
-import javax.swing.text.html.parser.Entity;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -25,7 +23,6 @@ public class Parser {
     private HashMap<String,Integer> wordsList;
     private HashMap<String,Integer> stemmingList;
     private static HashMap<String,ArrayList<Integer>> entities = new HashMap<>();
-    private Dictionary dictionary;
     private step1 step1;
 
     //private StopWords stopWords;
@@ -38,7 +35,7 @@ public class Parser {
 
     private static HashMap<String,ArrayList<Integer>> bigWordList = new HashMap<>();
 
-    public Parser(int indexDoc, String doc, String path, Dictionary dictionary) throws IOException {
+    public Parser(int indexDoc, String doc, String path) throws IOException {
         this.indexDoc = indexDoc;
         this.doc = doc;
         this.path = path;
@@ -49,7 +46,6 @@ public class Parser {
         this.stopWords = Files.readAllLines(Paths.get(path+ "\\05 stop_words.txt"));
         //this.stopWords=new StopWords(path);
         this.number= new Number();
-        this.dictionary = dictionary;
         this.stemmer=new Stemmer();
         this.step1=new step1();
     }

@@ -31,7 +31,7 @@ public class Number {
             } else {
                 word = "" + doubleNum + "B";
             }
-            System.out.println(word);
+            //System.out.println(word);
         } else if (doubleNum >= 1000000) {
             doubleNum = doubleNum / 1000000;
             int intNum = (int)(doubleNum*1000);

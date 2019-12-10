@@ -25,7 +25,6 @@ public class price {
         }
         //10000 dollars or $100000
         else if (word.matches("[0-9]+|[0-9]++\\b\\.\\b+[0-9]+") && Double.parseDouble(word) < 1000000) {
-            //todo add ','
             doubleNum = Double.valueOf(word);
 
             if ((doubleNum % 1) == 0) {
@@ -38,7 +37,6 @@ public class price {
             }
 
         } else if (word.matches("[0-9]+|[0-9]++\\b\\.\\b+[0-9]+") && Double.parseDouble(word) >= 1000000) {
-            //todo change to number M
             double Num = Double.valueOf(word);
             Num = Num / 1000000;
             //double scale = Math.pow(10, 3);

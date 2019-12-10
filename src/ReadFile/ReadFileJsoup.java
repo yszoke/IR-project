@@ -34,6 +34,7 @@ public class ReadFileJsoup implements ReadFileMethods {
     }
 
 
+
     /**
      * this function takes the files from the folder and split them docs, then send only the text part to parse class
      *

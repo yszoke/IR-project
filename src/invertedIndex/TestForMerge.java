@@ -10,7 +10,7 @@ public class TestForMerge {
 
         File folder = new File("posting");
         File[] listOfFiles = folder.listFiles();
-        merge.startMergingfiles(listOfFiles.length);
+        //merge.startMergingfiles(listOfFiles.length);
 
         Dictionary dictionary = new Dictionary(listOfFiles[0]);
         dictionary.create();

@@ -6,7 +6,7 @@ import java.util.HashMap;
 public class Dictionary {
 
     File file;
-    private static HashMap<String, String> dictionary = new HashMap<>();
+    private HashMap<String, String> dictionary = new HashMap<>();
 
 
     public Dictionary(File file) {
@@ -24,15 +24,16 @@ public class Dictionary {
         String currentWord="";
         String ln=reader.readLine();
         while (ln != null ) {
-            while (ln.charAt(0)==' '){
+            while (ln.equals("")||ln.charAt(0)==' '){
                 ln=reader.readLine();
             }
             counterFile++;
+            System.out.println(counterFile);
 
             FileWriter pw = new FileWriter("posting/" + counterFile + ".txt", false);
 
             counterLine = 0;
-            while (ln != null &&(counterLine < 50)) {
+            while (ln != null &&(counterLine < 100000)) {
                 line = ln.split(" ");
                 currentWord=calculateWord(line);
                 if(currentWord.equals(previousWord)){
@@ -51,6 +52,7 @@ public class Dictionary {
             pw.close();
             ln=reader.readLine();
         }
+        System.out.println(" ");
     }
     private String calculateWord(String[] line) {
         if(line.length>3){

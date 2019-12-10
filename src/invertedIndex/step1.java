@@ -17,6 +17,9 @@ public class step1 {
 
 
     public void addToTable(String word, int docNum, int position) throws IOException {
+        if(word == null|| word.equals("")){
+            return;
+        }
         if(docNum/10000==tableNum){
             table.add(word+" "+docNum+" "+position);
         }
@@ -24,6 +27,7 @@ public class step1 {
             Collections.sort(table);
             //System.out.println(table);
             //dictionary.addWordToDictionary(table);
+            tableNum++;
             String dir = "//posting";
             FileWriter writer = new FileWriter(new File( "posting//"+tableNum+ ".txt"));
             for(String str: table) {
@@ -31,7 +35,7 @@ public class step1 {
             }
             writer.close();
             table.clear();
-            tableNum++;
+
         }
     }
 }

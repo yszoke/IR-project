@@ -8,7 +8,7 @@ import java.util.TreeSet;
 public class MergeSorter extends Thread {
     int numberOfFiles;
     int fileNumber = 1;
-    int counter;
+    static int counter;
 
     public MergeSorter(int fileNum) {
         fileNumber = fileNum;
@@ -112,7 +112,7 @@ public class MergeSorter extends Thread {
                     String docIndex2 = lineB[lineB.length-2];
 
                     //choose LineA
-                    if((word1.compareTo(word2)<0)||(word1.equals(word2)&&docIndex1.compareTo(docIndex2)<0)){
+                    if((word1.compareTo(word2)<0)||(word1.equals(word2)&& Integer.parseInt(docIndex1)<Integer.parseInt(docIndex2))){
                         //todo check if equals to the last string and doc->print to last line
                         if (lastIndexDoc.equals(docIndex1) && lastWord.equals(word1)){
                             previousLine = previousLine+","+ lineA[lineA.length-1];
@@ -125,7 +125,7 @@ public class MergeSorter extends Thread {
                         line1 = br1.readLine();
 
                     }
-                    else if((word1.compareTo(word2)>0)||(word1.equals(word2)&&docIndex1.compareTo(docIndex2)>0)){
+                    else if((word1.compareTo(word2)>0)||(word1.equals(word2)&&Integer.parseInt(docIndex1)>Integer.parseInt(docIndex2))){
                         //todo check if equals to the last string and doc->print to last line
                         if (lastIndexDoc.equals(docIndex2) && lastWord.equals(word2)){
                             previousLine = previousLine+","+ lineB[lineB.length-1];

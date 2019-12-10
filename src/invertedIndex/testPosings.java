@@ -1,26 +1,39 @@
 package invertedIndex;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.stream.Stream;
 
 public class testPosings {
 
-    public static void main(String[] args){
-        String line = "";
-        int lineNo;
-        try {
-            File f=new File("C:\\Users\\ohoff\\Documents\\information retrieval\\test\\text.txt");
-            FileWriter fw = new FileWriter(f,true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            LineNumberReader lnr = new LineNumberReader(new FileReader(f));
-            lnr.setLineNumber(2);
-            String is = lnr.readLine();
+    public static void main(String[] args) throws IOException {
+        readFromFile();
 
-            bw.write("Hello World");
-            bw.close();
-            lnr.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
+    public static ArrayList<String> readFromFile() throws IOException {
+        ArrayList<String> allWords = new ArrayList<>();
+        FileReader readfile = new FileReader("C:\\Users\\ohoff\\Documents\\information retrieval\\test\\text.txt");
+        BufferedReader readbuffer = new BufferedReader(readfile);
+        String line= readbuffer.readLine();
+        while (line!=null){
+            allWords.add(line);
+            line= readbuffer.readLine();
+        }
+        return allWords;
+    }
+
+    public static void addDetailsToFile(int linenumber, ArrayList<String> allWords){
+        String line = allWords.get(linenumber);
+        //allWords.set(linenumber);
+    }
+
 }
+
 

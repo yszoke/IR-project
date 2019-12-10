@@ -190,7 +190,7 @@ public class Parser {
      *
      */
 
-    private void wordIsCalculated(String word) {
+    private void wordIsCalculated(String word) throws IOException {
         //if the word is (Captial letter at the beginning)
         if (word.charAt(0)=='('){
             word = word.substring(1, word.length() - 1);
@@ -211,7 +211,7 @@ public class Parser {
      * between function - parse to dictionary between 7 and seven = 6-7
      * @param textWords
      */
-    public void wordIsBetween(ArrayList<String> textWords) {
+    public void wordIsBetween(ArrayList<String> textWords) throws IOException {
 
         if (indexInText+2<textWords.size()&& textWords.get(indexInText+1).chars().allMatch(Character::isDigit)&& textWords.get(indexInText+2).chars().allMatch(Character::isDigit)){
             String temp = textWords.get(indexInText+1)+"-"+textWords.get(indexInText+2);
@@ -408,13 +408,13 @@ public class Parser {
      * this method will insert a word to the list, if the word is already there, then the counter will increase by 1.
      * @param word
      */
-    public void insertToWordsList(String word,int position){
+    public void insertToWordsList(String word,int position) throws IOException {
 
         //wordsList.put(word,position);
         step1.addToTable(word, indexDoc, position);
     }
 
-    public void insertToStemmingList(String word,int position){
+    public void insertToStemmingList(String word,int position) throws IOException {
         char[] charAray=word.toCharArray();
         stemmer.add(charAray,word.length());
         stemmer.stem();

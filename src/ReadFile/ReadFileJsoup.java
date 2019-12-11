@@ -2,6 +2,8 @@ package ReadFile;
 
 import Parse.Parser;
 import invertedIndex.Dictionary;
+import invertedIndex.MergeSorter;
+import invertedIndex.MergeSorter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -12,7 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class ReadFileJsoup implements ReadFileMethods {
+public class ReadFileJsoup extends Thread implements ReadFileMethods  {
 
     /**
      * variables
@@ -21,6 +23,7 @@ public class ReadFileJsoup implements ReadFileMethods {
     private int indexDoc = 1;
     private String path;
     private Dictionary dictionary;
+    private MergeSorter merge;
 
     /**
      * constructor
@@ -30,7 +33,10 @@ public class ReadFileJsoup implements ReadFileMethods {
     public ReadFileJsoup(String path) {
         this.folders = new File(path + "\\corpus").listFiles();
         this.path = path;
-        this.dictionary = new Dictionary();
+        File f = new File("posting");
+        f.mkdir();
+        this.merge = new MergeSorter(1);
+
     }
 
 
@@ -45,11 +51,14 @@ public class ReadFileJsoup implements ReadFileMethods {
                 String doc = new String(Files.readAllBytes(Paths.get(file.getPath() + "\\" + file.getName())));
                 Document html = Jsoup.parse(doc);
                 Elements elements=  html.getElementsByTag("DOC");
+
+
+
                 for (Element element : elements) {
                     if(element.getElementsByTag("TEXT").text().equals("")){
                         indexDoc++;
                     }else{
-                        Parser parser = new Parser(indexDoc,element.getElementsByTag("TEXT").text(),path,dictionary);
+                        Parser parser = new Parser(indexDoc,element.getElementsByTag("TEXT").text(),path);
                         parser.parse();
                         System.out.println(indexDoc);
                         indexDoc++;
@@ -59,5 +68,9 @@ public class ReadFileJsoup implements ReadFileMethods {
                 }
             }
         }
+
+        File folder = new File("posting");
+        File[] listOfFiles = folder.listFiles();
+        merge.startMergingfiles(listOfFiles.length);
     }
 }

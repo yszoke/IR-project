@@ -27,6 +27,8 @@ public class ReadFile implements ReadFileMethods{
     public ReadFile(String path) {
         this.folders = new File(path+"\\corpus").listFiles();
         this.path=path;
+        File f = new File("//posting");
+        f.mkdir();
     }
 
 

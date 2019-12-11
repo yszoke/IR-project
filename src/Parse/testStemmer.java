@@ -2,6 +2,10 @@ package Parse;
 
 import java.io.IOException;
 
+/**
+ * this class is for test the stemmer.
+ */
+
 public class testStemmer {
 
     public static void main(String[] args) throws IOException {
@@ -12,7 +16,7 @@ public class testStemmer {
         stemmer.add(charAray,words[0].length());
         stemmer.stem();
         System.out.println(stemmer.toString());
-        //stemmer.execute(words);
+        stemmer.execute(words);
     }
 }
 

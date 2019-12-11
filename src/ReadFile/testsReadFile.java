@@ -1,20 +1,23 @@
 package ReadFile;
 
-import ReadFile.ReadFile;
-import ReadFile.ReadFileJsoup;
-import ReadFile.ReadFileXML;
 import org.xml.sax.SAXException;
 
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 
+
+/**
+ * this class is for test the read files classes.
+ */
+
+
 public class testsReadFile {
 
     public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
-        String path = "C:\\Users\\yszok\\Desktop\\IR project";
-        //standartStrategy(path);
+        String path = "C:\\Users\\ohoff\\Documents\\information retrieval\\corpus";
         JsoupStrategy(path);
+        //standartStrategy(path);
 
         }
 

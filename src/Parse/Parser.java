@@ -24,40 +24,33 @@ public class Parser {
     private HashMap<String,Integer> stemmingList;
     private static HashMap<String,ArrayList<Integer>> entities = new HashMap<>();
     private step1 step1;
-
-    //private StopWords stopWords;
     private Number number;
     private date date;
     private List<String> stopWords;
-    private String tempWord;
     private int indexInText;
     private Stemmer stemmer;
-
+    private price price;
     private static HashMap<String,ArrayList<Integer>> bigWordList = new HashMap<>();
+
 
     public Parser(int indexDoc, String doc, String path) throws IOException {
         this.indexDoc = indexDoc;
         this.doc = doc;
         this.path = path;
         this.date= new date();
-        //this.entities=new HashMap<>();
         this.wordsList =new HashMap<>();
         this.stemmingList = new HashMap<>();
         this.stopWords = Files.readAllLines(Paths.get(path+ "\\05 stop_words.txt"));
-        //this.stopWords=new StopWords(path);
         this.number= new Number();
         this.stemmer=new Stemmer();
         this.step1=new step1();
+        this.price = new price();
     }
 
-
-
-
     /**
-     * this function will go over each word and parse it to number/term/ entity etc..save each term in a list of new word
+     * MAIN FUNCTION - will go over each word and parse it to number/term/ entity etc..send each word to next stage - SORTED TABLES
      * @throws IOException
      */
-
 
     public void parse() throws IOException {
 
@@ -74,14 +67,13 @@ public class Parser {
         regexTransforms();
 
         //change text to array of words
-        ArrayList<String> textWords = new ArrayList<String>(Arrays.asList(doc.split("\\s+")));
+        ArrayList<String> textWords = new ArrayList<>(Arrays.asList(doc.split("\\s+")));
         textWords.removeIf(s -> s.matches("\\s+"));
         textWords.remove("");
         indexInText = 0;
 
         /* iterate over the array and create terms */
         for (indexInText =0; indexInText < textWords.size(); indexInText++){
-            //System.out.println(textWords.get(indexInText).toString());
             if (textWords.get(indexInText).charAt(0)=='('||textWords.get(indexInText).charAt(textWords.get(indexInText).length()-1)=='*'){
                 wordIsCalculated(textWords.get(indexInText));
             }
@@ -89,6 +81,7 @@ public class Parser {
             else if (textWords.get(indexInText).equals("between")){
                 wordIsBetween(textWords);
             }
+            //insert all dash (-) words
             else if(textWords.get(indexInText).contains("-")){
                 insertToWordsList(textWords.get(indexInText),indexInText);
             }
@@ -99,7 +92,6 @@ public class Parser {
 
             //if the word is a number
             else if (number.check(textWords.get(indexInText))) {
-                //textWords.get(indexInText) = number.change(words, indexInText);
                 insertToWordsList(number.change(textWords,indexInText),indexInText);
             //if the number contains digit insert to wordsLIst
             } else if(textWords.get(indexInText).matches(".*\\d.*")){
@@ -117,13 +109,12 @@ public class Parser {
                     insertToStemmingList(textWords.get(indexInText), indexInText);
             }
         }
-        System.out.println("");
     }
 
     /**
      * this function check if its a price
-     * @param textWords
-     * @return
+     * @param textWords - string that will be checked if its in price format
+     * @return true - is price or false otherwise.
      */
     private boolean checkPrice(ArrayList<String> textWords)
     {
@@ -154,7 +145,6 @@ public class Parser {
                 indexInText++;
             }
         }
-        //System.out.println(result);
         return result;
     }
 
@@ -183,7 +173,7 @@ public class Parser {
 
     /**
      * this method create terms from a word that already been calculated
-     *
+     * @param word - word that already been transformed.
      */
 
     private void wordIsCalculated(String word) throws IOException {
@@ -196,8 +186,7 @@ public class Parser {
         }else if(word.length()>1&&word.charAt(word.length()-1)=='*'&&word.charAt(word.length()-2)=='*'){
             word = word.substring(0, word.length() - 2);
             insertToWordsList(word,indexInText);
-            //add to dictionary (word,docIndex,position)
-        // a word or number that contains '-' inside
+
         }else{
             insertToWordsList(word,indexInText);
         }
@@ -205,9 +194,9 @@ public class Parser {
 
     /**
      * between function - parse to dictionary between 7 and seven = 6-7
-     * @param textWords
+     * @param textWords - a between format ( between 7 and 6  = 7-6)
      */
-    public void wordIsBetween(ArrayList<String> textWords) throws IOException {
+    private void wordIsBetween(ArrayList<String> textWords) throws IOException {
 
         if (indexInText+2<textWords.size()&& textWords.get(indexInText+1).chars().allMatch(Character::isDigit)&& textWords.get(indexInText+2).chars().allMatch(Character::isDigit)){
             String temp = textWords.get(indexInText+1)+"-"+textWords.get(indexInText+2);
@@ -216,12 +205,6 @@ public class Parser {
         }
 
     }
-
-
-
-
-
-
 
     /**
      * this method is a sub method of parse that remove all the stop words.
@@ -236,10 +219,12 @@ public class Parser {
         return allWords.stream().collect(Collectors.joining(" "));
     }
     /**
-     * this method is a sub method of parse in case of the term is entity, it will add the term to entites data base and check for the next word recursively.
+     * this method is a sub method of parse in case of the term is entity, it will add the term to entites data base
+     * and check for the next word recursively.
+     *
      */
 
-    public String addToEntity(){
+    private String addToEntity(){
         ArrayList<String> allWords = new ArrayList<String>(Arrays.asList(doc.split(" +")));
         allWords.remove(new String(""));
         for (int i=0;i<allWords.size();i++){
@@ -267,7 +252,7 @@ public class Parser {
                     allWords.set(i,"("+ allWords.get(i)+")");
                 }
                 i++;
-                while(isUpperCase(i, allWords)){////////////////////////////////////////
+                while(isUpperCase(i, allWords)){
                     if (allWords.get(i).length()<2){
                         i++;
                         break;
@@ -295,9 +280,7 @@ public class Parser {
                 if (entity.charAt(entity.length()-1)=='.'){
                     entity = entity.substring(0,entity.length()-1);
                 }
-
                 addToEntityList( entity);
-
             }
         }
 
@@ -307,6 +290,10 @@ public class Parser {
         return allWords.stream().collect(Collectors.joining(" "));
     }
 
+    /**
+     * sub function of add to entity that adds the word to entity list
+     * @param entity - a string that represents an entity.
+     */
     private void addToEntityList(String entity) {
         if (entities.containsKey(entity)){
             if(!entities.get(entity).contains(indexDoc)){
@@ -350,29 +337,29 @@ public class Parser {
     }
 
     /**
-     * this method change the dates
-     * @param allWords
-     * @param i
-     * @return
+     * this method change the dates, uses date class
+     * @param allWords - array of strings represents the doc
+     * @param currentElement - current element in the array
+     * @return array of strings represents the doc, with dates reformat.
      */
 
-    public ArrayList<String> dateChange(ArrayList<String> allWords, int i) {
-        if (i>0 && allWords.get(i-1).chars().allMatch(Character::isDigit)){
-            //send to date function (allWords.get(i), allWords.get(i-1))
-            allWords.set(i,date.changeToDate(allWords.get(i), allWords.get(i-1)));
-            allWords.set(i-1,"the");
-        } else if (i<allWords.size()-1 && allWords.get(i+1).chars().allMatch(Character::isDigit)){
-            //send to date function (allWords.get(i), allWords.get(i+1))
-            allWords.set(i,date.changeToDate(allWords.get(i), allWords.get(i+1)));
-            allWords.set(i+1,"the");
+    public ArrayList<String> dateChange(ArrayList<String> allWords, int currentElement) {
+        if (currentElement>0 && allWords.get(currentElement-1).chars().allMatch(Character::isDigit)){
+            //send to date function (allWords.get(currentElement), allWords.get(currentElement-1))
+            allWords.set(currentElement,date.changeToDate(allWords.get(currentElement), allWords.get(currentElement-1)));
+            allWords.set(currentElement-1,"the");
+        } else if (currentElement<allWords.size()-1 && allWords.get(currentElement+1).chars().allMatch(Character::isDigit)){
+            //send to date function (allWords.get(currentElement), allWords.get(currentElement+1))
+            allWords.set(currentElement,date.changeToDate(allWords.get(currentElement), allWords.get(currentElement+1)));
+            allWords.set(currentElement+1,"the");
         }
         return allWords;
     }
 
     /**
      * this method check if a given word is a stop word
-     * @param word
-     * @return
+     * @param word - String from the doc
+     * @return - true - if it stop word or false otherwise.
      */
     private boolean isStopWord(String word) {
         word = word.toLowerCase();
@@ -384,9 +371,9 @@ public class Parser {
 
 
     /**
-     * this method check if a given word is a month
-     * @param word
-     * @return
+     * this method check if a given word is a month, sub method of change date.
+     * @param word - String from the doc
+     * @return if the given string is in month format.
      */
 
     public boolean isMonth(String word,String lastWord,String nextWord){
@@ -401,21 +388,24 @@ public class Parser {
     }
 
     /**
-     * this method will insert a word to the list, if the word is already there, then the counter will increase by 1.
-     * @param word
+     * this method sends a word, its docIndex and int position to next stage.
+     * @param word - Parse String from the doc.
      */
     public void insertToWordsList(String word,int position) throws IOException {
 
-        //wordsList.put(word,position);
         step1.addToTable(word, indexDoc, position);
     }
 
+    /**
+     * this method sends a word, its docIndex and int position to next stage after stemming
+     * @param word - Parse String from the doc.
+     * @param position - the position of the word in the text.
+     * @throws IOException
+     */
     public void insertToStemmingList(String word,int position) throws IOException {
         char[] charAray=word.toCharArray();
         stemmer.add(charAray,word.length());
         stemmer.stem();
-        //stemmingList.put(stemmer.toString(),position);
         step1.addToTable(stemmer.toString(), indexDoc, position);
     }
-
 }

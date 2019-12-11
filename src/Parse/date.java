@@ -1,5 +1,9 @@
 package Parse;
 
+/**
+ * this class is a help class for Parse that parse date in docs.
+ */
+
 public class date {
 
     public enum Date {
@@ -19,6 +23,12 @@ public class date {
 
     Date date;
 
+    /**
+     *  this method change date format
+     * @param monthWord - word that represents month (june, march etc..)
+     * @param digit - string that represents a day in the month or a year.
+     * @return the date as asked in the instructions (1 july = 07-01)
+     */
     public String changeToDate(String monthWord,String digit){
         monthWord = matchDate(monthWord);
         if (Integer.parseInt(digit)>999){
@@ -31,8 +41,12 @@ public class date {
         }
     }
 
-
-    public String matchDate(String name) {
+    /**
+     * sub method for changeToDate that get string of month and format it to digits. (july = 07)
+     * @param name - string that represents month.
+     * @return digits that represents the month
+     */
+    private String matchDate(String name) {
         date = Date.valueOf(name);
         String result="";
 

@@ -2,6 +2,12 @@ package Parse;
 
 import java.io.IOException;
 
+
+/**
+ * this class is for test the price class.
+ */
+
+
 public class testprice {
 
 

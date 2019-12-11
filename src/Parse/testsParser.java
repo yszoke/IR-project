@@ -15,29 +15,29 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+
+/**
+ * this class is for test the parser.
+ */
+
+
 public class testsParser {
 
     public static void main(String[] args) throws IOException {
         int docIndex = 1;
-        String pathForStopWords = "C:\\Users\\yszok\\Desktop\\IR project";
+        String pathForStopWords = "C:\\Users\\ohoff\\Documents\\information retrieval\\corpus";
         String sentence1 = "Lorem Ipsum is simply dummy text of the Printing and typesetting industry";
         String sentence2 = "The Mongolian Government and people gave wholehearted support to the " +
                 "Vietnamese people in their struggle for national liberation in " +
                 "the past as well as in national Vietnamese construction and defence at present";
         String sentence3 = " We also provide-static-- electricity protection for filling and draining devices";
-        Dictionary dic = new Dictionary();
-        Parser parser = new Parser(docIndex,sentence1,pathForStopWords,dic);
-        File input = new File(pathForStopWords+"\\test\\testForParse");
-        generalTest(input,dic);
-        //numberTest(parser);
-        //entityTest(parser);
+
+        Parser parser = new Parser(docIndex,sentence1,pathForStopWords);
+        numberTest(parser);
+        entityTest(parser);
         betweenTest(parser);
-        //dateTest(parser);
-        //dateChnge(parser);
-
-
-
-
+        dateTest(parser);
+        dateChnge(parser);
     }
 
     private static void dateChnge(Parser parser) {
@@ -62,7 +62,6 @@ public class testsParser {
             Matcher m = p.matcher(inputstring[i]);
             if(m.find()){
                 date date = new date();
-                System.out.println(date.matchDate(inputstring[i]));
             }
         }
 
@@ -77,7 +76,6 @@ public class testsParser {
         String sentence3 = " We also provide-static-- electricity protection for filling and draining devices";
 
 
-        System.out.println(parser.addToEntity());
 
     }
 
@@ -88,18 +86,18 @@ public class testsParser {
     private static void betweenTest(Parser parser) throws IOException {
         String sentence1 = "between 1 10 not Between 1 0 or between omer and israel simply dummy text of the printing and typesetting industry";
         ArrayList<String> myList = new ArrayList<String>(Arrays.asList(sentence1.split(" ")));
-        parser.wordIsBetween(myList);
+        //parser.wordIsBetween(myList);
 
     }
 
     private static void generalTest(File input, Dictionary dic) throws IOException {
         Document html = Jsoup.parse(input,"UTF-8","");
         Elements elements=  html.getElementsByTag("TEXT");
-        String pathForStopWords = "C:\\Users\\yszok\\Desktop\\IR project";
+        String pathForStopWords = "C:\\Users\\ohoff\\Documents\\information retrieval\\corpus";
         int counter = 1;
         for (Element element : elements) {
             System.out.println(counter);
-            Parser parser1 = new Parser(0,element.text(),pathForStopWords,dic);
+            Parser parser1 = new Parser(counter,element.text(),pathForStopWords);
             parser1.parse();
             counter++;
         }

@@ -10,7 +10,7 @@ public class testStemmer {
 
     public static void main(String[] args) throws IOException {
         String[] words=new String[1];
-        words[0]="programing";
+        words[0]="placement";
         char[] charAray=words[0].toCharArray();
         Stemmer stemmer=new Stemmer();
         stemmer.add(charAray,words[0].length());

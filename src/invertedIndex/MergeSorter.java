@@ -80,11 +80,11 @@ public class MergeSorter extends Thread {
 
             //check if the first line in the two files are "".
             String line1 = br1.readLine();
-            if (line1 != null && line1.equals("")) {
+            if (line1==null||line1.equals("")) {
                 line1 = br1.readLine();
             }
             String line2 = br2.readLine();
-            if (line1 != null && line2.equals("")) {
+            if (line2==null||line2.equals("")) {
                 line2 = br2.readLine();
             }
             // while we didn't finish both files

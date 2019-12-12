@@ -206,7 +206,7 @@ public class Stemmer
 
     private final void r(String s) { if (m() > 0) setto(s); }
 
-   /* step1() gets rid of plurals and -ed or -ing. e.g.
+   /* SortedTables() gets rid of plurals and -ed or -ing. e.g.
 
           caresses  ->  caress
           ponies    ->  poni

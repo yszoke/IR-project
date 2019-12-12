@@ -5,6 +5,8 @@ import Parse.Parser;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * this class create a dictionary and split the file to posting files
@@ -13,8 +15,9 @@ public class Dictionary {
 
     File file;
     private HashMap<String, String> dictionary;
-    private HashMap<String,Integer> wordsInDoc;
-    private HashMap<String,Integer> popularWordInDoc;
+    private HashMap<String, Integer> userDictionary;
+    private HashMap<String, Integer> wordsInDoc;
+    private HashMap<String, Integer> popularWordInDoc;
 
     /**
      * constructor
@@ -24,6 +27,7 @@ public class Dictionary {
     public Dictionary(File file) {
         this.file = file;
         dictionary = new HashMap<>();
+        userDictionary = new HashMap<>();
         wordsInDoc = new HashMap<>();
         popularWordInDoc = new HashMap<>();
         //init();
@@ -45,7 +49,7 @@ public class Dictionary {
         int pointerLine = 1;
         int Ndocs = 0;
         int shows = 0;
-        int showsInCorpus=0;
+        int showsInCorpus = 0;
         String previousWord = "";
         String currentWord = "";
         String ln = reader.readLine();
@@ -79,26 +83,23 @@ public class Dictionary {
                     if (shows > popularWordInDoc.get(doc)) {
                         popularWordInDoc.put(doc, shows);
                     }
-                }
-                else {
+                } else {
                     popularWordInDoc.put(doc, shows);
                 }
 
                 if (currentWord.equals(previousWord)) {
                     Ndocs++;
-                    showsInCorpus+=shows;
-                }
-
-                else {
+                    showsInCorpus += shows;
+                } else {
                     //add to dictionary with: number of docs, file name, number of line in the doc
 
-                    if (Parser.getBigWordList().containsKey(previousWord)&&Parser.getBigWordList().get(previousWord).size() == showsInCorpus) {
+                    if (Parser.getBigWordList().containsKey(previousWord) && Parser.getBigWordList().get(previousWord).size() == showsInCorpus) {
 
                         dictionary.put(previousWord.toUpperCase(), Ndocs + "-" + counterFile + "-" + pointerLine);
-                    }
-                    else {
+                        userDictionary.put(previousWord.toUpperCase(), showsInCorpus);
+                    } else {
                         dictionary.put(previousWord, Ndocs + "-" + counterFile + "-" + pointerLine);
-
+                        userDictionary.put(previousWord, showsInCorpus);
                     }
                     pointerLine = counterLine;
                     previousWord = currentWord;
@@ -119,23 +120,22 @@ public class Dictionary {
     }
 
     /**
-     *
      * @param line
      * @return
      */
     private int calculateShows(String[] line) {
-        String list=line[line.length-1];
-        String [] locations= list.split(",");
+        String list = line[line.length - 1];
+        String[] locations = list.split(",");
         return locations.length;
     }
+
     /**
-     *
      * @param line
      * @return
      */
     private String calculateDoc(String[] line) {
-        if(line.length>3){
-            return line[line.length-2];
+        if (line.length > 3) {
+            return line[line.length - 2];
         }
         return line[1];
     }
@@ -157,4 +157,21 @@ public class Dictionary {
             return line[0];
         }
     }
+
+    public void saveInformation() throws IOException {
+        FileWriter pw = new FileWriter("posting/docMetaData.txt", false);
+        FileWriter pw1 = new FileWriter("posting/termsMetaData.txt", false);
+        Iterator it = dictionary.entrySet().iterator();
+        Iterator it1 = userDictionary.entrySet().iterator();
+
+        while (it.hasNext() && it1.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            pw.write(pair.getKey() + " " + pair.getValue() + "\r\n");
+            Map.Entry pair1 = (Map.Entry) it1.next();
+            pw1.write(pair1.getKey() + " " + pair1.getValue() + "\r\n");
+        }
+        pw.close();
+        pw1.close();
+    }
 }
+

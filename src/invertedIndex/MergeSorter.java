@@ -180,6 +180,7 @@ public class MergeSorter extends Thread {
             e.printStackTrace();
         }
     }
+
     /**
      * this function get a split line and find the word inside
      *

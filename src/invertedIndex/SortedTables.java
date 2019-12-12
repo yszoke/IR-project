@@ -24,6 +24,7 @@ public class SortedTables {
      * @param position
      * @throws IOException
      */
+
     public void addToTable(String word, int docNum, int position) throws IOException {
         if (word == null || word.equals("")) {
             return;

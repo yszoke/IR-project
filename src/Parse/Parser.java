@@ -23,6 +23,7 @@ public class Parser {
     private HashMap<String,Integer> wordsList;
     private HashMap<String,Integer> stemmingList;
     private static HashMap<String,ArrayList<Integer>> entities = new HashMap<>();
+    private static HashMap<String,ArrayList<Integer>> bigWordList = new HashMap<>();
     private static SortedTables sortedTables1 = new SortedTables();
     private SortedTables step1;
     private Number number;
@@ -31,7 +32,7 @@ public class Parser {
     private int indexInText;
     private Stemmer stemmer;
     private price price;
-    private static HashMap<String,ArrayList<Integer>> bigWordList = new HashMap<>();
+
 
 
     public Parser(int indexDoc, String doc, String path) throws IOException {
@@ -180,8 +181,8 @@ public class Parser {
     private void wordIsCalculated(String word) throws IOException {
         //if the word is (Captial letter at the beginning)
         if (word.charAt(0)=='('){
-            word = word.substring(1, word.length() - 1);
-                //todo insert to BigWordList
+            word = word.replaceAll("\\(|\\)","");
+            addToStaticList(word,bigWordList);
 
          //percent word
         }else if(word.length()>1&&word.charAt(word.length()-1)=='*'&&word.charAt(word.length()-2)=='*'){
@@ -281,7 +282,7 @@ public class Parser {
                 if (entity.charAt(entity.length()-1)=='.'){
                     entity = entity.substring(0,entity.length()-1);
                 }
-                addToEntityList( entity);
+                addToStaticList( entity,entities);
             }
         }
 
@@ -292,18 +293,18 @@ public class Parser {
     }
 
     /**
-     * sub function of add to entity that adds the word to entity list
-     * @param entity - a string that represents an entity.
+     * sub function of add to word that adds the word to word list
+     * @param word - a string that represents an word.
      */
-    private void  addToEntityList(String entity) {
-        if (entities.containsKey(entity)){
-            if(!entities.get(entity).contains(indexDoc)){
-                entities.get(entity).add(indexDoc);
+    private void addToStaticList(String word,HashMap<String,ArrayList<Integer>> list ) {
+        if (list.containsKey(word)){
+            if(!list.get(word).contains(indexDoc)){
+                list.get(word).add(indexDoc);
             }
         }else {
             ArrayList<Integer> temp = new ArrayList<>();
-            entities.put(entity,temp);
-            entities.get(entity).add(indexDoc);
+            list.put(word,temp);
+            list.get(word).add(indexDoc);
         }
     }
 
@@ -420,7 +421,14 @@ public class Parser {
                    sortedTables1.addEntityToTable((String)entity.getKey(), docNum,0);
                }
            }
-
         }
+    }
+
+    public static HashMap<String, ArrayList<Integer>> getEntities() {
+        return entities;
+    }
+
+    public static HashMap<String, ArrayList<Integer>> getBigWordList() {
+        return bigWordList;
     }
 }

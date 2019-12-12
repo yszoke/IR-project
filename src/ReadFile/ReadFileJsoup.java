@@ -74,6 +74,8 @@ public class ReadFileJsoup extends Thread implements ReadFileMethods  {
         File folder = new File("prePosting");
         File[] listOfFiles = folder.listFiles();
         merge.startMergingfiles(listOfFiles.length);
-        System.out.println("");
+        listOfFiles = folder.listFiles();
+        Dictionary dictionary = new Dictionary(listOfFiles[0]);
+        dictionary.create();
     }
 }

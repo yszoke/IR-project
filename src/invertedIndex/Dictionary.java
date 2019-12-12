@@ -1,6 +1,9 @@
 package invertedIndex;
 
+import Parse.Parser;
+
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -24,14 +27,8 @@ public class Dictionary {
         wordsInDoc = new HashMap<>();
         popularWordInDoc = new HashMap<>();
         //init();
+        Parser.getBigWordList();
     }
-
-//    private void init() {
-//        for(int i=1; i<=472525; i++){
-//            wordsInDoc.put(String.valueOf(i),0);
-//            popularWordInDoc.put(String.valueOf(i),0);
-//        }
-//    }
 
     /**
      * this function reads the file, split to x posting files and creates the dictionary
@@ -48,6 +45,7 @@ public class Dictionary {
         int pointerLine = 1;
         int Ndocs = 0;
         int shows = 0;
+        int showsInCorpus=0;
         String previousWord = "";
         String currentWord = "";
         String ln = reader.readLine();
@@ -81,17 +79,32 @@ public class Dictionary {
                     if (shows > popularWordInDoc.get(doc)) {
                         popularWordInDoc.put(doc, shows);
                     }
-                } else {
+                }
+                else {
                     popularWordInDoc.put(doc, shows);
                 }
+
                 if (currentWord.equals(previousWord)) {
                     Ndocs++;
-                } else {
+                    showsInCorpus+=shows;
+                }
+
+                else {
                     //add to dictionary with: number of docs, file name, number of line in the doc
-                    dictionary.put(previousWord, Ndocs + "-" + counterFile + "-" + pointerLine);
+
+                    if (Parser.getBigWordList().containsKey(previousWord)&&Parser.getBigWordList().get(previousWord).size() == showsInCorpus) {
+
+                        dictionary.put(previousWord.toUpperCase(), Ndocs + "-" + counterFile + "-" + pointerLine);
+                    }
+                    else {
+                        dictionary.put(previousWord, Ndocs + "-" + counterFile + "-" + pointerLine);
+
+                    }
                     pointerLine = counterLine;
                     previousWord = currentWord;
                     Ndocs = 1;
+                    showsInCorpus = shows;
+
                 }
                 //write to the posting file
                 pw.write(ln + "\r\n");

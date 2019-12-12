@@ -1,6 +1,6 @@
 package Parse;
 
-import invertedIndex.step1;
+import invertedIndex.SortedTables;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,7 +23,8 @@ public class Parser {
     private HashMap<String,Integer> wordsList;
     private HashMap<String,Integer> stemmingList;
     private static HashMap<String,ArrayList<Integer>> entities = new HashMap<>();
-    private step1 step1;
+    private static SortedTables sortedTables1 = new SortedTables();
+    private SortedTables step1;
     private Number number;
     private date date;
     private List<String> stopWords;
@@ -43,7 +44,7 @@ public class Parser {
         this.stopWords = Files.readAllLines(Paths.get(path+ "\\05 stop_words.txt"));
         this.number= new Number();
         this.stemmer=new Stemmer();
-        this.step1=new step1();
+        this.step1=new SortedTables();
         this.price = new price();
     }
 
@@ -294,7 +295,7 @@ public class Parser {
      * sub function of add to entity that adds the word to entity list
      * @param entity - a string that represents an entity.
      */
-    private void addToEntityList(String entity) {
+    private void  addToEntityList(String entity) {
         if (entities.containsKey(entity)){
             if(!entities.get(entity).contains(indexDoc)){
                 entities.get(entity).add(indexDoc);
@@ -407,5 +408,19 @@ public class Parser {
         stemmer.add(charAray,word.length());
         stemmer.stem();
         step1.addToTable(stemmer.toString(), indexDoc, position);
+    }
+
+    public static void entityToSortedTable() throws IOException {
+        Iterator it = entities.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry entity = (Map.Entry)it.next();
+           if (  ((ArrayList<Integer>) entity.getValue()).size()>1){
+               ArrayList<Integer> arr = (ArrayList<Integer>) entity.getValue();
+               for(Integer docNum: arr){
+                   sortedTables1.addEntityToTable((String)entity.getKey(), docNum,0);
+               }
+           }
+
+        }
     }
 }

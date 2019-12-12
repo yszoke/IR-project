@@ -35,7 +35,7 @@ public class MergeSorter extends Thread {
         while (numberOfFiles > 1) {
             try {
                 ArrayList<MergeSorter> objectList = new ArrayList<MergeSorter>();
-                File folder = new File("posting");
+                File folder = new File("prePosting");
                 SortedSet<Integer> filesNames = new TreeSet<>();
                 File[] listOfFiles = folder.listFiles();
 
@@ -68,23 +68,23 @@ public class MergeSorter extends Thread {
 
         try {
             // create the file we will merge inside him the two files
-            FileWriter pw = new FileWriter("posting/" + counter + ".txt", false);
+            FileWriter pw = new FileWriter("prePosting/" + counter + ".txt", false);
             counter++;
             String lastWord = "";
             String lastIndexDoc = "";
             // BufferedReader object for the 2 files
-            BufferedReader br1 = new BufferedReader(new FileReader("posting/" + Integer.toString(fileNumber) + ".txt"));
-            BufferedReader br2 = new BufferedReader(new FileReader("posting/" + Integer.toString(fileNumber + 1) + ".txt"));
+            BufferedReader br1 = new BufferedReader(new FileReader("prePosting/" + Integer.toString(fileNumber) + ".txt"));
+            BufferedReader br2 = new BufferedReader(new FileReader("prePosting/" + Integer.toString(fileNumber + 1) + ".txt"));
             String previousLine = "";
 
 
             //check if the first line in the two files are "".
             String line1 = br1.readLine();
-            if (line1.equals("")) {
+            if (line1 != null && line1.equals("")) {
                 line1 = br1.readLine();
             }
             String line2 = br2.readLine();
-            if (line2.equals("")) {
+            if (line1 != null && line2.equals("")) {
                 line2 = br2.readLine();
             }
             // while we didn't finish both files
@@ -169,9 +169,9 @@ public class MergeSorter extends Thread {
             br1.close();
             br2.close();
             pw.close();
-            File file1 = new File("posting/" + fileNumber + ".txt");
+            File file1 = new File("prePosting/" + fileNumber + ".txt");
             file1.delete();
-            File file2 = new File("posting/" + Integer.toString(fileNumber + 1) + ".txt");
+            File file2 = new File("prePosting/" + Integer.toString(fileNumber + 1) + ".txt");
             file2.delete();
 
         } catch (FileNotFoundException e) {

@@ -4,6 +4,7 @@ import Parse.Parser;
 import invertedIndex.Dictionary;
 import invertedIndex.MergeSorter;
 import invertedIndex.MergeSorter;
+import invertedIndex.SortedTables;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -31,10 +32,12 @@ public class ReadFileJsoup extends Thread implements ReadFileMethods  {
      * @param path
      */
     public ReadFileJsoup(String path) {
-        this.folders = new File(path + "\\corpus").listFiles();
+        this.folders = new File(path + "\\Tests").listFiles();
         this.path = path;
         File f = new File("posting");
         f.mkdir();
+        File f1 = new File("prePosting");
+        f1.mkdir();
         this.merge = new MergeSorter(1);
 
     }
@@ -62,14 +65,15 @@ public class ReadFileJsoup extends Thread implements ReadFileMethods  {
                         System.out.println(indexDoc);
                         indexDoc++;
                     }
-
-                    //System.out.println(indexDoc);
                 }
             }
         }
 
-        File folder = new File("posting");
+        Parser.entityToSortedTable();
+        SortedTables.addLastTable();
+        File folder = new File("prePosting");
         File[] listOfFiles = folder.listFiles();
         merge.startMergingfiles(listOfFiles.length);
+        System.out.println("");
     }
 }

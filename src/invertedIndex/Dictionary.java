@@ -3,10 +3,7 @@ package invertedIndex;
 import Parse.Parser;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * this class create a dictionary and split the file to posting files
@@ -160,10 +157,14 @@ public class Dictionary {
     }
 
     public void saveInformation() throws IOException {
-        FileWriter pw = new FileWriter("posting/docMetaData.txt", false);
-        FileWriter pw1 = new FileWriter("posting/termsMetaData.txt", false);
-        Iterator it = dictionary.entrySet().iterator();
-        Iterator it1 = userDictionary.entrySet().iterator();
+        TreeMap<String, Integer> sorted = new TreeMap<>(userDictionary);
+        Set<Map.Entry<String, Integer>> mappings = sorted.entrySet();
+        TreeMap<String, String> sorted2 = new TreeMap<>(dictionary);
+        Set<Map.Entry<String, String>> mappings2 = sorted2.entrySet();
+        FileWriter pw = new FileWriter("posting/dicMetaData.txt", false);
+        FileWriter pw1 = new FileWriter("posting/termsInDic.txt", false);
+        Iterator it = mappings2.iterator();
+        Iterator it1 = mappings.iterator();
 
         while (it.hasNext() && it1.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
@@ -173,7 +174,23 @@ public class Dictionary {
         }
         pw.close();
         pw1.close();
-    }
 
+        sorted = new TreeMap<>(popularWordInDoc);
+        Set<Map.Entry<String, Integer>> mappings3 = sorted.entrySet();
+        TreeMap<String, Integer> sorted4 = new TreeMap<>(wordsInDoc);
+        Set<Map.Entry<String, Integer>> mappings4 = sorted4.entrySet();
+        pw = new FileWriter("posting/amountOfPopularInDoc.txt", false);
+        pw1 = new FileWriter("posting/termsInDoc.txt", false);
+        it = mappings3.iterator();
+        it1 = mappings4.iterator();
+        while(it.hasNext() && it1.hasNext()){
+            Map.Entry pair = (Map.Entry) it.next();
+            pw.write(pair.getKey() + " " + pair.getValue() + "\r\n");
+            Map.Entry pair1 = (Map.Entry) it1.next();
+            pw1.write(pair1.getKey() + " " + pair1.getValue() + "\r\n");
+        }
+        pw.close();
+        pw1.close();
+    }
 }
 

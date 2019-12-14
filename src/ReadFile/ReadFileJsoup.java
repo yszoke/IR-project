@@ -1,10 +1,8 @@
 package ReadFile;
 
 import Parse.Parser;
-import invertedIndex.Dictionary;
+import invertedIndex.*;
 import invertedIndex.MergeSorter;
-import invertedIndex.MergeSorter;
-import invertedIndex.SortedTables;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -68,8 +66,8 @@ public class ReadFileJsoup extends Thread implements ReadFileMethods  {
                 }
             }
         }
-
-        Parser.entityToSortedTable();
+        SortedTablesThreads sortedTables = new SortedTablesThreads();
+        //Parser.entityToSortedTable();
         SortedTables.addLastTable();
         File folder = new File("prePosting");
         File[] listOfFiles = folder.listFiles();
@@ -77,5 +75,7 @@ public class ReadFileJsoup extends Thread implements ReadFileMethods  {
         listOfFiles = folder.listFiles();
         Dictionary dictionary = new Dictionary(listOfFiles[0]);
         dictionary.create();
+        dictionary.saveInformation();
+
     }
 }

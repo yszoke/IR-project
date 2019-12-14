@@ -1,6 +1,7 @@
 package Parse;
 
 import invertedIndex.SortedTables;
+import invertedIndex.SortedTablesThreads;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,6 +26,8 @@ public class Parser {
     private static HashMap<String,ArrayList<Integer>> entities = new HashMap<>();
     private static HashMap<String,ArrayList<Integer>> bigWordList = new HashMap<>();
     private static SortedTables sortedTables1 = new SortedTables();
+    private static SortedTablesThreads sortedTables2 = new SortedTablesThreads();
+    private SortedTablesThreads sortedTablesThreads;
     private SortedTables step1;
     private Number number;
     private date date;
@@ -47,6 +50,7 @@ public class Parser {
         this.stemmer=new Stemmer();
         this.step1=new SortedTables();
         this.price = new price();
+        this.sortedTablesThreads = new SortedTablesThreads();
     }
 
     /**
@@ -395,7 +399,8 @@ public class Parser {
      */
     public void insertToWordsList(String word,int position) throws IOException {
 
-        step1.addToTable(word, indexDoc, position);
+        //step1.addToTable(word, indexDoc, position);
+        sortedTablesThreads.addToTable(word, indexDoc, position);
     }
 
     /**
@@ -408,21 +413,10 @@ public class Parser {
         char[] charAray=word.toCharArray();
         stemmer.add(charAray,word.length());
         stemmer.stem();
-        step1.addToTable(stemmer.toString(), indexDoc, position);
+        //step1.addToTable(stemmer.toString(), indexDoc, position);
+        sortedTablesThreads.addToTable(stemmer.toString(), indexDoc, position);
     }
 
-    public static void entityToSortedTable() throws IOException {
-        Iterator it = entities.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entity = (Map.Entry)it.next();
-           if (  ((ArrayList<Integer>) entity.getValue()).size()>1){
-               ArrayList<Integer> arr = (ArrayList<Integer>) entity.getValue();
-               for(Integer docNum: arr){
-                   sortedTables1.addEntityToTable((String)entity.getKey(), docNum,0);
-               }
-           }
-        }
-    }
 
     public static HashMap<String, ArrayList<Integer>> getEntities() {
         return entities;

@@ -161,6 +161,35 @@ public class MergeSorter extends Thread {
                         }
                         line2 = br2.readLine();
                     }
+
+                    //line A and line B are equal
+                    else if (word1.equals(word2)&& Integer.parseInt(docIndex1)== Integer.parseInt(docIndex2)){
+                         String[] position = lineA[lineA.length-1].split(",");
+                         int position1 = Integer.parseInt(position[0]);
+                         position = lineB[lineB.length-1].split(",");
+                         int position2 = Integer.parseInt(position[0]);
+                         if (position1<position2){
+                             if (lastIndexDoc.equals(docIndex1) && lastWord.equals(word1)) {
+                                 previousLine = previousLine + "," + lineA[lineA.length - 1];
+                             } else {
+                                 pw.write(previousLine + "\r\n");
+                                 previousLine = line1;
+                                 lastWord = word1;
+                                 lastIndexDoc = docIndex1;
+                             }
+                             line1 = br1.readLine();
+                         }else{
+                             if (lastIndexDoc.equals(docIndex2) && lastWord.equals(word2)) {
+                                 previousLine = previousLine + "," + lineB[lineB.length - 1];
+                             } else {
+                                 pw.write(previousLine + "\r\n");
+                                 previousLine = line2;
+                                 lastWord = word2;
+                                 lastIndexDoc = docIndex2;
+                             }
+                             line2 = br2.readLine();
+                         }
+                    }
                 }
             }
             pw.write(previousLine + "\r\n");

@@ -66,7 +66,7 @@ public class Dictionary {
             counterLine = 0;
 
             // each x lines is one posting file
-            while (ln != null && (counterLine < 100000)) {
+            while (ln != null && (counterLine < 10000000)) {
                 line = ln.split(" ");
                 if (line.length < 3) {
                     continue;
@@ -117,6 +117,7 @@ public class Dictionary {
             System.out.println(index);
             index++;
         }
+        System.out.println(" ");
     }
 
     /**

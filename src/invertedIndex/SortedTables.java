@@ -49,7 +49,7 @@ public class SortedTables {
         sortedTables.writeToFile();
     }
 
-    private void writeToFile() throws IOException {
+    public void writeToFile() throws IOException {
         Collections.sort(table);
         tableNum++;
         FileWriter writer = new FileWriter(new File("prePosting//" + tableNum + ".txt"));

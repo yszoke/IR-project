@@ -8,5 +8,5 @@ import java.io.IOException;
 
 public interface ReadFileMethods {
 
-    public void splitToDocs() throws IOException;
+    public void splitToDocs() throws IOException, InterruptedException;
 }

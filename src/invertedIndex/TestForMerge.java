@@ -10,10 +10,9 @@ public class TestForMerge {
 
         File folder = new File("prePosting");
         File[] listOfFiles = folder.listFiles();
-        //merge.startMergingfiles(listOfFiles.length);
-        //listOfFiles = folder.listFiles();
+        merge.startMergingfiles(listOfFiles.length);
+        listOfFiles = folder.listFiles();
         Dictionary dictionary = new Dictionary(listOfFiles[0]);
         dictionary.create();
-        System.out.println();
     }
 }

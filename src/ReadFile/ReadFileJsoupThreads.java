@@ -1,11 +1,9 @@
 package ReadFile;
 
-import Parse.Parser;
 import invertedIndex.*;
 import invertedIndex.MergeSorter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.File;
@@ -25,27 +23,46 @@ public class ReadFileJsoupThreads extends Thread implements ReadFileMethods  {
      */
     private File[] folders;
     private int indexDoc = 1;
-    private String path;
+    private String pathForData;
+    private String pathForPosting;
+    private String pathForPrePosting;
     private Dictionary dictionary;
     private MergeSorter merge;
     private ArrayList<Integer> docIndexer;
     ArrayList<magicThreads> threadList = new ArrayList<>();
+    boolean stemming;
 
     /**
      * constructor
      *
-     * @param path
+     * @param pathForData
      */
-    public ReadFileJsoupThreads(String path) {
-        this.folders = new File(path + "\\corpus").listFiles();
-        this.path = path;
-        File f = new File("posting");
-        f.mkdir();
-        File f1 = new File("prePosting");
-        f1.mkdir();
-        this.merge = new MergeSorter(1);
+    public ReadFileJsoupThreads(String pathForData, boolean stemming, String pathForPosting) {
+        this.folders = new File(pathForData + "\\tests").listFiles();
+        this.pathForData = pathForData;
+        this.pathForPosting = pathForPosting;
+        this.stemming = stemming;
+        createFolders();
+        this.merge = new MergeSorter(1,pathForPrePosting);
         this.docIndexer = new ArrayList<>();
         this.threadList = new ArrayList<>();
+
+
+
+    }
+
+    private void createFolders() {
+        File f = new File(pathForData);
+        f.mkdir();
+        if (stemming){
+            File f2 = new File("stemming");
+            f2.mkdir();
+            pathForPrePosting = "stemming";
+        } else {
+            File f2 = new File("withoutStemming");
+            f2.mkdir();
+            pathForPrePosting = "withoutStemming";
+        }
 
 
     }
@@ -75,20 +92,20 @@ public class ReadFileJsoupThreads extends Thread implements ReadFileMethods  {
 
         int currentIndexDoc = 0;
         for (File file : folders) {
-            todo.add(Executors.callable(new magicThreads(file, docIndexer.get(currentIndexDoc),path)));
+            todo.add(Executors.callable(new magicThreads(file, docIndexer.get(currentIndexDoc), pathForData,stemming)));
             currentIndexDoc++;
 
         }
 
         List<Future<Object>> answers = threadPool.invokeAll(todo);
 
-        SortedTablesThreads sortedTablesThreads = new SortedTablesThreads();
+        SortedTablesThreads sortedTablesThreads = new SortedTablesThreads(stemming);
         System.out.println("finish parser!----------------");
         sortedTablesThreads.entityToSortedTable();
         System.out.println("finish entity!----------------");
-        SortedTablesThreads.addLastTable();
+        sortedTablesThreads.addLastTable();
         System.out.println("finish last table!----------------");
-        File folder = new File("prePosting");
+        File folder = new File(pathForPrePosting);
         File[] listOfFiles = folder.listFiles();
         merge.startMergingfiles(listOfFiles.length);
         System.out.println("finish merge!----------------");

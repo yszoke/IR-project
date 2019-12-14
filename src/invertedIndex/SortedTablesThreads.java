@@ -18,8 +18,19 @@ public class SortedTablesThreads {
     private static int tableNum = 0;
     private static ArrayList<String> table = new ArrayList<>();
     private static BlockingQueue <String> queue = new ArrayBlockingQueue(10000000);
-    private static SortedTablesThreads sortedTables=new SortedTablesThreads();
     private static boolean lock= true;
+    private boolean stemming;
+    private String wordFolder;
+
+    public SortedTablesThreads(boolean stemming) {
+        this.stemming = stemming;
+        if (stemming){
+            this.wordFolder = "stemming";
+        }else{
+            this.wordFolder = "withoutwithoutStemming";
+        }
+    }
+
     /**
      * get words from parse, insert to tables and writes to the disk
      *
@@ -42,20 +53,8 @@ public class SortedTablesThreads {
         }
     }
 
-    public void addEntityToTable(String word, int docNum, int position) throws IOException {
-        if (word == null || word.equals("")) {
-            return;
-        }
-        table.add(word + " " + docNum + " " + position);
-        if (queue.size() > 1500000 && lock) {
-            lock = false;
-            writeToFile();
-            lock = true;
-        }
-    }
-
-    public static void addLastTable() throws IOException {
-        sortedTables.writeToFile();
+    public void addLastTable() throws IOException {
+        writeToFile();
     }
 
     private void writeToFile() throws IOException {
@@ -64,7 +63,7 @@ public class SortedTablesThreads {
         String[] arr = queue.toArray(new String[queue.size()]);
         queue.clear();
         Arrays.sort(arr);
-        FileWriter writer = new FileWriter(new File("prePosting//" + tableNum + ".txt"));
+        FileWriter writer = new FileWriter(new File(wordFolder+"//" + tableNum + ".txt"));
         for (String str : arr) {
             writer.write(str + System.lineSeparator());
         }
@@ -79,7 +78,7 @@ public class SortedTablesThreads {
         sorted.putAll(entities);
         Iterator it = sorted.entrySet().iterator();
         tableNum++;
-        FileWriter writer = new FileWriter(new File("prePosting//" + tableNum + ".txt"));
+        FileWriter writer = new FileWriter(new File(wordFolder+"//" + tableNum + ".txt"));
         while (it.hasNext()) {
             Map.Entry entity = (Map.Entry)it.next();
             if (  ((ArrayList<Integer>) entity.getValue()).size()>1){
@@ -92,25 +91,3 @@ public class SortedTablesThreads {
         writer.close();
     }
 }
-
-
-
-
-    /*
-    //each table contains words from x docs
-    if (docNum / 10000 == tableNum) {
-        table.add(word + " " + docNum + " " + position);
-    } else {
-        Collections.sort(table);
-        tableNum++;
-        FileWriter writer = new FileWriter(new File("posting//" + tableNum + ".txt"));
-        for (String str : table) {
-            writer.write(str + System.lineSeparator());
-        }
-        writer.close();
-        table.clear();
-    }
-
-     */
-
-

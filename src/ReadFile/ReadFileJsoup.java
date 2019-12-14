@@ -30,13 +30,13 @@ public class ReadFileJsoup extends Thread implements ReadFileMethods  {
      * @param path
      */
     public ReadFileJsoup(String path) {
-        this.folders = new File(path + "\\Tests").listFiles();
+        //this.folders = new File(path + "\\Tests").listFiles();
         this.path = path;
-        File f = new File("posting");
-        f.mkdir();
-        File f1 = new File("prePosting");
-        f1.mkdir();
-        this.merge = new MergeSorter(1);
+        //File f = new File("posting");
+        //f.mkdir();
+        //File f1 = new File("prePosting");
+        //f1.mkdir();
+        //this.merge = new MergeSorter(1,);
 
     }
 
@@ -58,15 +58,15 @@ public class ReadFileJsoup extends Thread implements ReadFileMethods  {
                     if(element.getElementsByTag("TEXT").text().equals("")){
                         indexDoc++;
                     }else{
-                        Parser parser = new Parser(indexDoc,element.getElementsByTag("TEXT").text(),path);
-                        parser.parse();
+                        //Parser parser = new Parser(indexDoc,element.getElementsByTag("TEXT").text(),path,);
+                        //parser.parse();
                         System.out.println(indexDoc);
                         indexDoc++;
                     }
                 }
             }
         }
-        SortedTablesThreads sortedTables = new SortedTablesThreads();
+        //SortedTablesThreads sortedTables = new SortedTablesThreads();
         //Parser.entityToSortedTable();
         SortedTables.addLastTable();
         File folder = new File("prePosting");

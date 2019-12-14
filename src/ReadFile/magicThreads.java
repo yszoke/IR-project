@@ -15,11 +15,13 @@ public class magicThreads extends Thread {
     File file;
     int indexDoc;
     String path;
+    boolean stemming;
 
-    public magicThreads(File file, int indexDoc,String path){
+    public magicThreads(File file, int indexDoc,String path,boolean stemming){
         this.file = file;
         this.indexDoc = indexDoc;
         this.path = path;
+        this.stemming = stemming;
     }
 
     public void run(){
@@ -42,7 +44,7 @@ public class magicThreads extends Thread {
                 }else{
                     Parser parser = null;
                     try {
-                        parser = new Parser(indexDoc,element.getElementsByTag("TEXT").text(),path);
+                        parser = new Parser(indexDoc,element.getElementsByTag("TEXT").text(),path,stemming);
                         parser.parse();
                         System.out.println(indexDoc);
                     } catch (IOException e) {

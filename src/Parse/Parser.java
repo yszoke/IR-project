@@ -25,8 +25,6 @@ public class Parser {
     private HashMap<String,Integer> stemmingList;
     private static HashMap<String,ArrayList<Integer>> entities = new HashMap<>();
     private static HashMap<String,ArrayList<Integer>> bigWordList = new HashMap<>();
-    private static SortedTables sortedTables1 = new SortedTables();
-    private static SortedTablesThreads sortedTables2 = new SortedTablesThreads();
     private SortedTablesThreads sortedTablesThreads;
     private SortedTables step1;
     private Number number;
@@ -35,10 +33,11 @@ public class Parser {
     private int indexInText;
     private Stemmer stemmer;
     private price price;
+    private boolean stemming;
 
 
 
-    public Parser(int indexDoc, String doc, String path) throws IOException {
+    public Parser(int indexDoc, String doc, String path, boolean stemming) throws IOException {
         this.indexDoc = indexDoc;
         this.doc = doc;
         this.path = path;
@@ -50,7 +49,8 @@ public class Parser {
         this.stemmer=new Stemmer();
         this.step1=new SortedTables();
         this.price = new price();
-        this.sortedTablesThreads = new SortedTablesThreads();
+        this.sortedTablesThreads = new SortedTablesThreads(stemming);
+        this.stemming = stemming;
     }
 
     /**
@@ -111,8 +111,13 @@ public class Parser {
                 if(textWords.get(indexInText).charAt(textWords.get(indexInText).length()-1)=='.'){
                     textWords.set(indexInText, textWords.get(indexInText).substring(0,textWords.get(indexInText).length()-1));
                 }
-                //if the user want stemming todo
+                if(stemming){
                     insertToStemmingList(textWords.get(indexInText), indexInText);
+                }
+                else {
+                    insertToWordsList(textWords.get(indexInText),indexInText);
+                }
+
             }
         }
     }

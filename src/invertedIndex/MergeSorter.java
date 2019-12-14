@@ -12,14 +12,16 @@ public class MergeSorter extends Thread {
     private int numberOfFiles;
     private int fileNumber;
     private static int counter;
+    String folder;
 
     /**
      * constructor
      *
      * @param fileNum
      */
-    public MergeSorter(int fileNum) {
+    public MergeSorter(int fileNum, String folderLocation) {
         fileNumber = fileNum;
+        this.folder = folderLocation;
     }
 
     /**
@@ -35,7 +37,7 @@ public class MergeSorter extends Thread {
         while (numberOfFiles > 1) {
             try {
                 ArrayList<MergeSorter> objectList = new ArrayList<MergeSorter>();
-                File folder = new File("prePosting");
+                File folder = new File(this.folder);
                 SortedSet<Integer> filesNames = new TreeSet<>();
                 File[] listOfFiles = folder.listFiles();
 
@@ -49,7 +51,7 @@ public class MergeSorter extends Thread {
 
                 //send every 2 files to the merge function with threads
                 for (int j = filesNames.first(); j < filesNames.last(); j = j + 2) {
-                    objectList.add(new MergeSorter(j));
+                    objectList.add(new MergeSorter(j,this.folder));
                     objectList.get(objectCounter).start();
                     objectList.get(objectCounter).join();
                     objectCounter++;
@@ -68,13 +70,13 @@ public class MergeSorter extends Thread {
 
         try {
             // create the file we will merge inside him the two files
-            FileWriter pw = new FileWriter("prePosting/" + counter + ".txt", false);
+            FileWriter pw = new FileWriter(folder+"/" + counter + ".txt", false);
             counter++;
             String lastWord = "";
             String lastIndexDoc = "";
             // BufferedReader object for the 2 files
-            BufferedReader br1 = new BufferedReader(new FileReader("prePosting/" + Integer.toString(fileNumber) + ".txt"));
-            BufferedReader br2 = new BufferedReader(new FileReader("prePosting/" + Integer.toString(fileNumber + 1) + ".txt"));
+            BufferedReader br1 = new BufferedReader(new FileReader(folder+"/" + Integer.toString(fileNumber) + ".txt"));
+            BufferedReader br2 = new BufferedReader(new FileReader(folder+"/" + Integer.toString(fileNumber + 1) + ".txt"));
             String previousLine = "";
 
 
@@ -198,9 +200,9 @@ public class MergeSorter extends Thread {
             br1.close();
             br2.close();
             pw.close();
-            File file1 = new File("prePosting/" + fileNumber + ".txt");
+            File file1 = new File(folder+"/" + fileNumber + ".txt");
             file1.delete();
-            File file2 = new File("prePosting/" + Integer.toString(fileNumber + 1) + ".txt");
+            File file2 = new File(folder+"/" + Integer.toString(fileNumber + 1) + ".txt");
             file2.delete();
 
         } catch (FileNotFoundException e) {
